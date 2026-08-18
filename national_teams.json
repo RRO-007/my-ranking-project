@@ -6,12 +6,7 @@
     "points": 1995.98,
     "officialPoints": 1889.02,
     "officialRank": 1,
-    "history": [
-      1980.12,
-      1988.5,
-      1992.1,
-      1995.98
-    ]
+    "history": [1980.12, 1988.5, 1992.1, 1995.98]
   },
   {
     "id": "ARG",
@@ -20,12 +15,7 @@
     "points": 1970.37,
     "officialPoints": 1901.45,
     "officialRank": 2,
-    "history": [
-      1985.0,
-      1978.2,
-      1972.1,
-      1970.37
-    ]
+    "history": [1985.0, 1978.2, 1972.1, 1970.37]
   },
   {
     "id": "FRA",
@@ -34,12 +24,7 @@
     "points": 1948.97,
     "officialPoints": 1872.1,
     "officialRank": 3,
-    "history": [
-      1940.0,
-      1942.5,
-      1945.0,
-      1948.97
-    ]
+    "history": [1940.0, 1942.5, 1945.0, 1948.97]
   },
   {
     "id": "ENG",
@@ -48,12 +33,7 @@
     "points": 1922.83,
     "officialPoints": 1812.2,
     "officialRank": 4,
-    "history": [
-      1910.0,
-      1915.2,
-      1920.0,
-      1922.83
-    ]
+    "history": [1910.0, 1915.2, 1920.0, 1922.83]
   },
   {
     "id": "BRA",
@@ -62,12 +42,7 @@
     "points": 1804.92,
     "officialPoints": 1775.85,
     "officialRank": 5,
-    "history": [
-      1820.0,
-      1812.5,
-      1808.0,
-      1804.92
-    ]
+    "history": [1820.0, 1812.5, 1808.0, 1804.92]
   },
   {
     "id": "MAR",
@@ -75,13 +50,8 @@
     "confed": "CAF",
     "points": 1803.99,
     "officialPoints": 1681.5,
-    "officialRank": 12,
-    "history": [
-      1750.0,
-      1770.0,
-      1790.0,
-      1803.99
-    ]
+    "officialRank": 6,
+    "history": [1750.0, 1770.0, 1790.0, 1803.99]
   },
   {
     "id": "POR",
@@ -89,13 +59,8 @@
     "confed": "UEFA",
     "points": 1787.85,
     "officialPoints": 1756.12,
-    "officialRank": 6,
-    "history": [
-      1760.0,
-      1770.0,
-      1780.0,
-      1787.85
-    ]
+    "officialRank": 7,
+    "history": [1760.0, 1770.0, 1780.0, 1787.85]
   },
   {
     "id": "BEL",
@@ -103,13 +68,8 @@
     "confed": "UEFA",
     "points": 1778.36,
     "officialPoints": 1761.24,
-    "officialRank": 7,
-    "history": [
-      1785.0,
-      1780.0,
-      1779.0,
-      1778.36
-    ]
+    "officialRank": 8,
+    "history": [1785.0, 1780.0, 1779.0, 1778.36]
   },
   {
     "id": "NED",
@@ -117,13 +77,8 @@
     "confed": "UEFA",
     "points": 1775.54,
     "officialPoints": 1750.8,
-    "officialRank": 8,
-    "history": [
-      1755.0,
-      1762.0,
-      1770.0,
-      1775.54
-    ]
+    "officialRank": 9,
+    "history": [1755.0, 1762.0, 1770.0, 1775.54]
   },
   {
     "id": "MEX",
@@ -131,13 +86,8 @@
     "confed": "CONCACAF",
     "points": 1754.3,
     "officialPoints": 1658.82,
-    "officialRank": 15,
-    "history": [
-      1710.0,
-      1725.0,
-      1740.0,
-      1754.3
-    ]
+    "officialRank": 10,
+    "history": [1710.0, 1725.0, 1740.0, 1754.3]
   },
   {
     "id": "COL",
@@ -145,13 +95,8 @@
     "confed": "CONMEBOL",
     "points": 1739.89,
     "officialPoints": 1738.0,
-    "officialRank": 9,
-    "history": [
-      1720.0,
-      1728.0,
-      1735.0,
-      1739.89
-    ]
+    "officialRank": 11,
+    "history": [1720.0, 1728.0, 1735.0, 1739.89]
   },
   {
     "id": "GER",
@@ -159,13 +104,35 @@
     "confed": "UEFA",
     "points": 1726.22,
     "officialPoints": 1700.1,
-    "officialRank": 10,
-    "history": [
-      1690.0,
-      1705.0,
-      1715.0,
-      1726.22
-    ]
+    "officialRank": 12,
+    "history": [1690.0, 1705.0, 1715.0, 1726.22]
+  },
+  {
+    "id": "CRO",
+    "name": "Croatia",
+    "confed": "UEFA",
+    "points": 1723.05,
+    "officialPoints": 1714.87,
+    "officialRank": 13,
+    "history": [1700.0, 1708.0, 1715.0, 1723.05]
+  },
+  {
+    "id": "SUI",
+    "name": "Switzerland",
+    "confed": "UEFA",
+    "points": 1710.88,
+    "officialPoints": 1650.06,
+    "officialRank": 14,
+    "history": [1660.0, 1680.0, 1695.0, 1710.88]
+  },
+  {
+    "id": "ITA",
+    "name": "Italy",
+    "confed": "UEFA",
+    "points": 1704.73,
+    "officialPoints": 1704.73,
+    "officialRank": 15,
+    "history": [1690.0, 1695.0, 1700.0, 1704.73]
   },
   {
     "id": "USA",
@@ -174,12 +141,7 @@
     "points": 1690.33,
     "officialPoints": 1640.7,
     "officialRank": 16,
-    "history": [
-      1650.0,
-      1665.0,
-      1680.0,
-      1690.33
-    ]
+    "history": [1650.0, 1665.0, 1680.0, 1690.33]
   },
   {
     "id": "JPN",
@@ -188,12 +150,7 @@
     "points": 1673.68,
     "officialPoints": 1639.6,
     "officialRank": 17,
-    "history": [
-      1620.0,
-      1640.0,
-      1660.0,
-      1673.68
-    ]
+    "history": [1620.0, 1640.0, 1660.0, 1673.68]
   },
   {
     "id": "SEN",
@@ -201,13 +158,116 @@
     "confed": "CAF",
     "points": 1653.43,
     "officialPoints": 1620.0,
+    "officialRank": 18,
+    "history": [1610.0, 1625.0, 1640.0, 1653.43]
+  },
+  {
+    "id": "NOR",
+    "name": "Norway",
+    "confed": "UEFA",
+    "points": 1651.29,
+    "officialPoints": 1557.44,
     "officialRank": 19,
-    "history": [
-      1610.0,
-      1625.0,
-      1640.0,
-      1653.43
-    ]
+    "history": [1560.0, 1590.0, 1620.0, 1651.29]
+  },
+  {
+    "id": "URU",
+    "name": "Uruguay",
+    "confed": "CONMEBOL",
+    "points": 1634.7,
+    "officialPoints": 1673.07,
+    "officialRank": 20,
+    "history": [1660.0, 1655.0, 1645.0, 1634.7]
+  },
+  {
+    "id": "DEN",
+    "name": "Denmark",
+    "confed": "UEFA",
+    "points": 1619.47,
+    "officialPoints": 1619.47,
+    "officialRank": 21,
+    "history": [1610.0, 1612.0, 1615.0, 1619.47]
+  },
+  {
+    "id": "IRN",
+    "name": "Iran",
+    "confed": "AFC",
+    "points": 1609.85,
+    "officialPoints": 1619.58,
+    "officialRank": 22,
+    "history": [1620.0, 1618.0, 1612.0, 1609.85]
+  },
+  {
+    "id": "AUT",
+    "name": "Austria",
+    "confed": "UEFA",
+    "points": 1598.82,
+    "officialPoints": 1597.4,
+    "officialRank": 23,
+    "history": [1580.0, 1588.0, 1592.0, 1598.82]
+  },
+  {
+    "id": "EGY",
+    "name": "Egypt",
+    "confed": "CAF",
+    "points": 1597.04,
+    "officialPoints": 1562.37,
+    "officialRank": 24,
+    "history": [1550.0, 1568.0, 1580.0, 1597.04]
+  },
+  {
+    "id": "ECU",
+    "name": "Ecuador",
+    "confed": "CONMEBOL",
+    "points": 1592.59,
+    "officialPoints": 1598.52,
+    "officialRank": 25,
+    "history": [1600.0, 1598.0, 1595.0, 1592.59]
+  },
+  {
+    "id": "NGA",
+    "name": "Nigeria",
+    "confed": "CAF",
+    "points": 1585.02,
+    "officialPoints": 1585.02,
+    "officialRank": 26,
+    "history": [1575.0, 1580.0, 1582.0, 1585.02]
+  },
+  {
+    "id": "TUR",
+    "name": "Turkiye",
+    "confed": "UEFA",
+    "points": 1582.54,
+    "officialPoints": 1605.73,
+    "officialRank": 27,
+    "history": [1610.0, 1600.0, 1590.0, 1582.54]
+  },
+  {
+    "id": "AUS",
+    "name": "Australia",
+    "confed": "AFC",
+    "points": 1581.51,
+    "officialPoints": 1579.34,
+    "officialRank": 28,
+    "history": [1570.0, 1575.0, 1578.0, 1581.51]
+  },
+  {
+    "id": "ALG",
+    "name": "Algeria",
+    "confed": "CAF",
+    "points": 1576.8,
+    "officialPoints": 1571.03,
+    "officialRank": 29,
+    "history": [1560.0, 1565.0, 1570.0, 1576.8]
+  },
+  {
+    "id": "CAN",
+    "name": "Canada",
+    "confed": "CONCACAF",
+    "points": 1571.34,
+    "officialPoints": 1559.48,
+    "officialRank": 30,
+    "history": [1540.0, 1550.0, 1560.0, 1571.34]
   },
   {
     "id": "NZL",
@@ -216,11 +276,6 @@
     "points": 1228.1,
     "officialPoints": 1200.0,
     "officialRank": 90,
-    "history": [
-      1180.0,
-      1195.0,
-      1210.0,
-      1228.1
-    ]
+    "history": [1180.0, 1195.0, 1210.0, 1228.1]
   }
 ]
