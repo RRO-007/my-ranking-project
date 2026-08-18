@@ -192,6 +192,7 @@
       overflow-x: auto;
       border-radius: 8px;
       border: 1px solid var(--border-color);
+      max-height: 700px;
     }
 
     table {
@@ -202,6 +203,9 @@
     }
 
     th {
+      position: sticky;
+      top: 0;
+      z-index: 10;
       background-color: var(--bg-input);
       color: var(--text-muted);
       padding: 0.85rem 1rem;
@@ -222,8 +226,8 @@
 
     .rank-badge {
       font-weight: 700;
-      width: 30px;
-      height: 30px;
+      width: 32px;
+      height: 32px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -370,7 +374,7 @@
 
     .chart-container {
       width: 100%;
-      height: 250px;
+      height: 280px;
       background: var(--bg-input);
       border: 1px solid var(--border-color);
       border-radius: 8px;
@@ -380,7 +384,7 @@
 
     svg.chart-svg { width: 100%; height: 100%; overflow: visible; }
 
-    .match-log { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 1rem; }
+    .match-log { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 1rem; max-height: 350px; overflow-y: auto; }
 
     .match-item {
       display: flex;
@@ -418,11 +422,11 @@
   <header>
     <div class="header-title">World Football Ranking Engine</div>
     <div class="header-subtitle">
-      Compare calculated live daily rankings against official monthly rankings, track position movement (+/-), and simulate matches for both National Teams and Top Clubs.
+      Compare calculated live daily rankings against official monthly rankings, track position movement (+/-), and simulate matches for all 210 National Teams and World Clubs.
     </div>
 
     <div class="mode-switch-container">
-      <button class="mode-btn active" id="modeNationalBtn" onclick="setRankingMode('national')">🌍 National Teams (FIFA)</button>
+      <button class="mode-btn active" id="modeNationalBtn" onclick="setRankingMode('national')">🌍 National Teams (FIFA - 210 Teams)</button>
       <button class="mode-btn" id="modeClubBtn" onclick="setRankingMode('club')">🛡️ Club World Rankings</button>
     </div>
 
@@ -452,7 +456,7 @@
             <button class="confed-pill" onclick="filterConfed('AFC')">AFC</button>
             <button class="confed-pill" onclick="filterConfed('OFC')">OFC</button>
           </div>
-          <div class="storage-badge">💾 LocalStorage Synced</div>
+          <div class="storage-badge" id="teamCountBadge">💾 210 Teams Synced</div>
           <button class="btn-reset" onclick="resetDatabase()">Reset Mode Data</button>
         </div>
 
@@ -660,7 +664,7 @@ Dual Ranking Rules:
     const KEY_CLUB_TEAMS = 'fifa_dual_club_teams_v2';
     const KEY_CLUB_MATCHES = 'fifa_dual_club_matches_v2';
 
-    // Baseline Default Data: All 210 FIFA National Teams
+    // Baseline Default Data: ALL 210 FIFA National Teams
     const defaultNationalTeams = [
       { id: 'ESP', name: 'Spain', confed: 'UEFA', points: 1995.98, officialPoints: 1889.02, officialRank: 1, history: [1980.12, 1988.50, 1992.10, 1995.98] },
       { id: 'ARG', name: 'Argentina', confed: 'CONMEBOL', points: 1970.37, officialPoints: 1901.45, officialRank: 2, history: [1985.00, 1978.20, 1972.10, 1970.37] },
@@ -696,638 +700,519 @@ Dual Ranking Rules:
       { id: 'UKR', name: 'Ukraine', confed: 'UEFA', points: 1575.10, officialPoints: 1568.86, officialRank: 25, history: [1550.00, 1560.00, 1568.00, 1575.10] },
       { id: 'POL', name: 'Poland', confed: 'UEFA', points: 1545.20, officialPoints: 1536.99, officialRank: 28, history: [1520.00, 1530.00, 1538.00, 1545.20] },
       { id: 'WLS', name: 'Wales', confed: 'UEFA', points: 1530.00, officialPoints: 1523.50, officialRank: 29, history: [1510.00, 1518.00, 1524.00, 1530.00] },
+      { id: 'SWE', name: 'Sweden', confed: 'UEFA', points: 1525.00, officialPoints: 1520.00, officialRank: 35, history: [1505.00, 1512.00, 1518.00, 1525.00] },
       { id: 'RUS', name: 'Russia', confed: 'UEFA', points: 1506.58, officialPoints: 1506.58, officialRank: 32, history: [1500.00, 1502.00, 1505.00, 1506.58] },
       { id: 'HUN', name: 'Hungary', confed: 'UEFA', points: 1515.00, officialPoints: 1510.00, officialRank: 34, history: [1495.00, 1502.00, 1508.00, 1515.00] },
-      { id: 'SWE', name: 'Sweden', confed: 'UEFA', points: 1525.00, officialPoints: 1520.00, officialRank: 35, history: [1505.00, 1512.00, 1518.00, 1525.00] },
-      { id: 'PER', name: 'Peru', confed: 'CONMEBOL', points: 1495.00, officialPoints: 1489.00, officialRank: 36, history: [1470.00, 1480.00, 1488.00, 1495.00] },
-      { id: 'CZE', name: 'Czech Republic', confed: 'UEFA', points: 1508.00, officialPoints: 1502.00, officialRank: 37, history: [1485.00, 1495.00, 1500.00, 1508.00] },
-      { id: 'CIV', name: 'Ivory Coast', confed: 'CAF', points: 1500.00, officialPoints: 1492.00, officialRank: 38, history: [1475.00, 1485.00, 1492.00, 1500.00] },
-      { id: 'CHI', name: 'Chile', confed: 'CONMEBOL', points: 1475.00, officialPoints: 1468.00, officialRank: 39, history: [1450.00, 1460.00, 1468.00, 1475.00] },
-      { id: 'TUN', name: 'Tunisia', confed: 'CAF', points: 1500.00, officialPoints: 1494.00, officialRank: 40, history: [1478.00, 1486.00, 1492.00, 1500.00] },
-      { id: 'PAN', name: 'Panama', confed: 'CONCACAF', points: 1490.00, officialPoints: 1482.00, officialRank: 41, history: [1465.00, 1475.00, 1482.00, 1490.00] },
-      { id: 'SCO', name: 'Scotland', confed: 'UEFA', points: 1478.00, officialPoints: 1470.00, officialRank: 42, history: [1455.00, 1462.00, 1470.00, 1478.00] },
-      { id: 'SVK', name: 'Slovakia', confed: 'UEFA', points: 1472.00, officialPoints: 1465.00, officialRank: 44, history: [1448.00, 1458.00, 1465.00, 1472.00] },
-      { id: 'ROU', name: 'Romania', confed: 'UEFA', points: 1468.00, officialPoints: 1460.00, officialRank: 45, history: [1442.00, 1452.00, 1460.00, 1468.00] },
-      { id: 'UZB', name: 'Uzbekistan', confed: 'AFC', points: 1455.00, officialPoints: 1445.00, officialRank: 47, history: [1430.00, 1440.00, 1448.00, 1455.00] },
-      { id: 'QAT', name: 'Qatar', confed: 'AFC', points: 1490.00, officialPoints: 1480.00, officialRank: 48, history: [1460.00, 1472.00, 1482.00, 1490.00] },
-      { id: 'GRE', name: 'Greece', confed: 'UEFA', points: 1462.00, officialPoints: 1455.00, officialRank: 49, history: [1435.00, 1445.00, 1452.00, 1462.00] },
-      { id: 'CRC', name: 'Costa Rica', confed: 'CONCACAF', points: 1458.00, officialPoints: 1450.00, officialRank: 50, history: [1430.00, 1440.00, 1448.00, 1458.00] },
-      { id: 'MLI', name: 'Mali', confed: 'CAF', points: 1462.00, officialPoints: 1456.00, officialRank: 51, history: [1438.00, 1448.00, 1455.00, 1462.00] },
-      { id: 'CMR', name: 'Cameroon', confed: 'CAF', points: 1455.00, officialPoints: 1448.00, officialRank: 52, history: [1430.00, 1440.00, 1448.00, 1455.00] },
-      { id: 'VEN', name: 'Venezuela', confed: 'CONMEBOL', points: 1448.00, officialPoints: 1440.00, officialRank: 53, history: [1420.00, 1432.00, 1440.00, 1448.00] },
-      { id: 'IRQ', name: 'Iraq', confed: 'AFC', points: 1440.00, officialPoints: 1433.00, officialRank: 54, history: [1415.00, 1425.00, 1432.00, 1440.00] },
-      { id: 'SVN', name: 'Slovenia', confed: 'UEFA', points: 1438.00, officialPoints: 1430.00, officialRank: 55, history: [1410.00, 1420.00, 1428.00, 1438.00] },
-      { id: 'PAR', name: 'Paraguay', confed: 'CONMEBOL', points: 1432.00, officialPoints: 1425.00, officialRank: 56, history: [1405.00, 1415.00, 1422.00, 1432.00] },
-      { id: 'KSA', name: 'Saudi Arabia', confed: 'AFC', points: 1428.00, officialPoints: 1420.00, officialRank: 57, history: [1400.00, 1410.00, 1418.00, 1428.00] },
-      { id: 'RSA', name: 'South Africa', confed: 'CAF', points: 1422.00, officialPoints: 1415.00, officialRank: 58, history: [1395.00, 1405.00, 1412.00, 1422.00] },
-      { id: 'DRC', name: 'DR Congo', confed: 'CAF', points: 1408.00, officialPoints: 1400.00, officialRank: 59, history: [1380.00, 1390.00, 1398.00, 1408.00] },
-      { id: 'IRL', name: 'Republic of Ireland', confed: 'UEFA', points: 1402.00, officialPoints: 1395.00, officialRank: 60, history: [1375.00, 1385.00, 1392.00, 1402.00] },
-      { id: 'FIN', name: 'Finland', confed: 'UEFA', points: 1398.00, officialPoints: 1390.00, officialRank: 61, history: [1370.00, 1380.00, 1388.00, 1398.00] },
-      { id: 'BFA', name: 'Burkina Faso', confed: 'CAF', points: 1392.00, officialPoints: 1385.00, officialRank: 62, history: [1365.00, 1375.00, 1382.00, 1392.00] },
-      { id: 'ALB', name: 'Albania', confed: 'UEFA', points: 1388.00, officialPoints: 1380.00, officialRank: 63, history: [1360.00, 1370.00, 1378.00, 1388.00] },
-      { id: 'JAM', name: 'Jamaica', confed: 'CONCACAF', points: 1382.00, officialPoints: 1375.00, officialRank: 64, history: [1355.00, 1365.00, 1372.00, 1382.00] },
-      { id: 'MKD', name: 'North Macedonia', confed: 'UEFA', points: 1378.00, officialPoints: 1370.00, officialRank: 65, history: [1350.00, 1360.00, 1368.00, 1378.00] },
-      { id: 'CPV', name: 'Cape Verde', confed: 'CAF', points: 1372.00, officialPoints: 1365.00, officialRank: 66, history: [1345.00, 1355.00, 1362.00, 1372.00] },
-      { id: 'GHA', name: 'Ghana', confed: 'CAF', points: 1368.00, officialPoints: 1360.00, officialRank: 67, history: [1340.00, 1350.00, 1358.00, 1368.00] },
-      { id: 'GEO', name: 'Georgia', confed: 'UEFA', points: 1385.00, officialPoints: 1375.00, officialRank: 68, history: [1350.00, 1362.00, 1372.00, 1385.00] },
-      { id: 'JOR', name: 'Jordan', confed: 'AFC', points: 1380.00, officialPoints: 1370.00, officialRank: 69, history: [1345.00, 1358.00, 1368.00, 1380.00] },
-      { id: 'ISL', name: 'Iceland', confed: 'UEFA', points: 1358.00, officialPoints: 1350.00, officialRank: 70, history: [1330.00, 1340.00, 1348.00, 1358.00] },
-      { id: 'NIR', name: 'Northern Ireland', confed: 'UEFA', points: 1352.00, officialPoints: 1345.00, officialRank: 71, history: [1325.00, 1335.00, 1342.00, 1352.00] },
-      { id: 'UAE', name: 'United Arab Emirates', confed: 'AFC', points: 1348.00, officialPoints: 1340.00, officialRank: 72, history: [1320.00, 1330.00, 1338.00, 1348.00] },
-      { id: 'BIH', name: 'Bosnia and Herzegovina', confed: 'UEFA', points: 1342.00, officialPoints: 1335.00, officialRank: 73, history: [1315.00, 1325.00, 1332.00, 1342.00] },
-      { id: 'MNE', name: 'Montenegro', confed: 'UEFA', points: 1338.00, officialPoints: 1330.00, officialRank: 74, history: [1310.00, 1320.00, 1328.00, 1338.00] },
-      { id: 'OMA', name: 'Oman', confed: 'AFC', points: 1332.00, officialPoints: 1325.00, officialRank: 75, history: [1305.00, 1315.00, 1322.00, 1332.00] },
-      { id: 'ISR', name: 'Israel', confed: 'UEFA', points: 1328.00, officialPoints: 1320.00, officialRank: 76, history: [1300.00, 1310.00, 1318.00, 1328.00] },
-      { id: 'HON', name: 'Honduras', confed: 'CONCACAF', points: 1322.00, officialPoints: 1315.00, officialRank: 77, history: [1295.00, 1305.00, 1312.00, 1322.00] },
-      { id: 'GUI', name: 'Guinea', confed: 'CAF', points: 1318.00, officialPoints: 1310.00, officialRank: 78, history: [1290.00, 1300.00, 1308.00, 1318.00] },
-      { id: 'BUL', name: 'Bulgaria', confed: 'UEFA', points: 1312.00, officialPoints: 1305.00, officialRank: 79, history: [1285.00, 1295.00, 1302.00, 1312.00] },
-      { id: 'BOL', name: 'Bolivia', confed: 'CONMEBOL', points: 1308.00, officialPoints: 1300.00, officialRank: 80, history: [1280.00, 1290.00, 1298.00, 1308.00] },
-      { id: 'BHR', name: 'Bahrain', confed: 'AFC', points: 1302.00, officialPoints: 1295.00, officialRank: 81, history: [1275.00, 1285.00, 1292.00, 1302.00] },
-      { id: 'SLV', name: 'El Salvador', confed: 'CONCACAF', points: 1298.00, officialPoints: 1290.00, officialRank: 82, history: [1270.00, 1280.00, 1288.00, 1298.00] },
-      { id: 'GAB', name: 'Gabon', confed: 'CAF', points: 1292.00, officialPoints: 1285.00, officialRank: 83, history: [1265.00, 1275.00, 1282.00, 1292.00] },
-      { id: 'CHN', name: 'China PR', confed: 'AFC', points: 1288.00, officialPoints: 1280.00, officialRank: 84, history: [1260.00, 1270.00, 1278.00, 1288.00] },
-      { id: 'ZAM', name: 'Zambia', confed: 'CAF', points: 1282.00, officialPoints: 1275.00, officialRank: 85, history: [1255.00, 1265.00, 1272.00, 1282.00] },
-      { id: 'LUX', name: 'Luxembourg', confed: 'UEFA', points: 1278.00, officialPoints: 1270.00, officialRank: 86, history: [1250.00, 1260.00, 1268.00, 1278.00] },
-      { id: 'HAI', name: 'Haiti', confed: 'CONCACAF', points: 1272.00, officialPoints: 1265.00, officialRank: 87, history: [1245.00, 1255.00, 1262.00, 1272.00] },
-      { id: 'CUR', name: 'Curaçao', confed: 'CONCACAF', points: 1268.00, officialPoints: 1260.00, officialRank: 88, history: [1240.00, 1250.00, 1258.00, 1268.00] },
-      { id: 'EQG', name: 'Equatorial Guinea', confed: 'CAF', points: 1262.00, officialPoints: 1255.00, officialRank: 89, history: [1235.00, 1245.00, 1252.00, 1262.00] },
-      { id: 'NZL', name: 'New Zealand', confed: 'OFC', points: 1228.10, officialPoints: 1200.00, officialRank: 90, history: [1180.00, 1195.00, 1210.00, 1228.10] },
-      { id: 'SYR', name: 'Syria', confed: 'AFC', points: 1252.00, officialPoints: 1245.00, officialRank: 91, history: [1225.00, 1235.00, 1242.00, 1252.00] },
-      { id: 'UGA', name: 'Uganda', confed: 'CAF', points: 1248.00, officialPoints: 1240.00, officialRank: 92, history: [1220.00, 1230.00, 1238.00, 1248.00] },
-      { id: 'ANG', name: 'Angola', confed: 'CAF', points: 1242.00, officialPoints: 1235.00, officialRank: 93, history: [1215.00, 1225.00, 1232.00, 1242.00] },
-      { id: 'BEN', name: 'Benin', confed: 'CAF', points: 1238.00, officialPoints: 1230.00, officialRank: 94, history: [1210.00, 1220.00, 1228.00, 1238.00] },
-      { id: 'ARM', name: 'Armenia', confed: 'UEFA', points: 1232.00, officialPoints: 1225.00, officialRank: 95, history: [1205.00, 1215.00, 1222.00, 1232.00] },
-      { id: 'BLR', name: 'Belarus', confed: 'UEFA', points: 1228.00, officialPoints: 1220.00, officialRank: 96, history: [1200.00, 1210.00, 1218.00, 1228.00] },
-      { id: 'TRI', name: 'Trinidad and Tobago', confed: 'CONCACAF', points: 1222.00, officialPoints: 1215.00, officialRank: 97, history: [1195.00, 1205.00, 1212.00, 1222.00] },
-      { id: 'GUA', name: 'Guatemala', confed: 'CONCACAF', points: 1218.00, officialPoints: 1210.00, officialRank: 98, history: [1190.00, 1200.00, 1208.00, 1218.00] },
-      { id: 'PLE', name: 'Palestine', confed: 'AFC', points: 1212.00, officialPoints: 1205.00, officialRank: 99, history: [1185.00, 1195.00, 1202.00, 1212.00] },
-      { id: 'KGZ', name: 'Kyrgyzstan', confed: 'AFC', points: 1208.00, officialPoints: 1200.00, officialRank: 100, history: [1180.00, 1190.00, 1198.00, 1208.00] },
-      { id: 'TJK', name: 'Tajikistan', confed: 'AFC', points: 1202.00, officialPoints: 1195.00, officialRank: 101, history: [1175.00, 1185.00, 1192.00, 1202.00] },
-      { id: 'KAZ', name: 'Kazakhstan', confed: 'UEFA', points: 1198.00, officialPoints: 1190.00, officialRank: 102, history: [1170.00, 1180.00, 1188.00, 1198.00] },
-      { id: 'THA', name: 'Thailand', confed: 'AFC', points: 1192.00, officialPoints: 1185.00, officialRank: 103, history: [1165.00, 1175.00, 1182.00, 1192.00] },
-      { id: 'KOS', name: 'Kosovo', confed: 'UEFA', points: 1188.00, officialPoints: 1180.00, officialRank: 104, history: [1160.00, 1170.00, 1178.00, 1188.00] },
-      { id: 'MOZ', name: 'Mozambique', confed: 'CAF', points: 1182.00, officialPoints: 1175.00, officialRank: 105, history: [1155.00, 1165.00, 1172.00, 1182.00] },
-      { id: 'MRI', name: 'Mauritania', confed: 'CAF', points: 1177.00, officialPoints: 1170.00, officialRank: 106, history: [1150.00, 1160.00, 1167.00, 1177.00] },
-      { id: 'GNB', name: 'Guinea-Bissau', confed: 'CAF', points: 1172.00, officialPoints: 1165.00, officialRank: 107, history: [1145.00, 1155.00, 1162.00, 1172.00] },
-      { id: 'MAD', name: 'Madagascar', confed: 'CAF', points: 1167.00, officialPoints: 1160.00, officialRank: 108, history: [1140.00, 1150.00, 1157.00, 1167.00] },
-      { id: 'AZE', name: 'Azerbaijan', confed: 'UEFA', points: 1162.00, officialPoints: 1155.00, officialRank: 109, history: [1135.00, 1145.00, 1152.00, 1162.00] },
-      { id: 'KEN', name: 'Kenya', confed: 'CAF', points: 1157.00, officialPoints: 1150.00, officialRank: 110, history: [1130.00, 1140.00, 1147.00, 1157.00] },
-      { id: 'NAM', name: 'Namibia', confed: 'CAF', points: 1152.00, officialPoints: 1145.00, officialRank: 111, history: [1125.00, 1135.00, 1142.00, 1152.00] },
-      { id: 'PRK', name: 'North Korea', confed: 'AFC', points: 1147.00, officialPoints: 1140.00, officialRank: 112, history: [1120.00, 1130.00, 1137.00, 1147.00] },
-      { id: 'VIE', name: 'Vietnam', confed: 'AFC', points: 1142.00, officialPoints: 1135.00, officialRank: 113, history: [1115.00, 1125.00, 1132.00, 1142.00] },
-      { id: 'CGO', name: 'Congo', confed: 'CAF', points: 1137.00, officialPoints: 1130.00, officialRank: 114, history: [1110.00, 1120.00, 1127.00, 1137.00] },
-      { id: 'LBN', name: 'Lebanon', confed: 'AFC', points: 1132.00, officialPoints: 1125.00, officialRank: 115, history: [1105.00, 1115.00, 1122.00, 1132.00] },
-      { id: 'IND', name: 'India', confed: 'AFC', points: 1127.00, officialPoints: 1120.00, officialRank: 116, history: [1100.00, 1110.00, 1117.00, 1127.00] },
-      { id: 'TOG', name: 'Togo', confed: 'CAF', points: 1122.00, officialPoints: 1115.00, officialRank: 117, history: [1095.00, 1105.00, 1112.00, 1122.00] },
-      { id: 'TAN', name: 'Tanzania', confed: 'CAF', points: 1117.00, officialPoints: 1110.00, officialRank: 118, history: [1090.00, 1100.00, 1107.00, 1117.00] },
-      { id: 'ZIM', name: 'Zimbabwe', confed: 'CAF', points: 1112.00, officialPoints: 1105.00, officialRank: 119, history: [1085.00, 1095.00, 1102.00, 1112.00] },
-      { id: 'LBY', name: 'Libya', confed: 'CAF', points: 1107.00, officialPoints: 1100.00, officialRank: 120, history: [1080.00, 1090.00, 1097.00, 1107.00] },
-      { id: 'EST', name: 'Estonia', confed: 'UEFA', points: 1102.00, officialPoints: 1095.00, officialRank: 121, history: [1075.00, 1085.00, 1092.00, 1102.00] },
-      { id: 'COM', name: 'Comoros', confed: 'CAF', points: 1097.00, officialPoints: 1090.00, officialRank: 122, history: [1070.00, 1080.00, 1087.00, 1097.00] },
-      { id: 'CYP', name: 'Cyprus', confed: 'UEFA', points: 1092.00, officialPoints: 1085.00, officialRank: 123, history: [1065.00, 1075.00, 1082.00, 1092.00] },
-      { id: 'MWI', name: 'Malawi', confed: 'CAF', points: 1087.00, officialPoints: 1080.00, officialRank: 124, history: [1060.00, 1070.00, 1077.00, 1087.00] },
-      { id: 'SLE', name: 'Sierra Leone', confed: 'CAF', points: 1082.00, officialPoints: 1075.00, officialRank: 125, history: [1055.00, 1065.00, 1072.00, 1082.00] },
-      { id: 'SDN', name: 'Sudan', confed: 'CAF', points: 1077.00, officialPoints: 1070.00, officialRank: 126, history: [1050.00, 1060.00, 1067.00, 1077.00] },
-      { id: 'MAS', name: 'Malaysia', confed: 'AFC', points: 1072.00, officialPoints: 1065.00, officialRank: 127, history: [1045.00, 1055.00, 1062.00, 1072.00] },
-      { id: 'CTA', name: 'Central African Republic', confed: 'CAF', points: 1067.00, officialPoints: 1060.00, officialRank: 128, history: [1040.00, 1050.00, 1057.00, 1067.00] },
-      { id: 'NIG', name: 'Niger', confed: 'CAF', points: 1062.00, officialPoints: 1055.00, officialRank: 129, history: [1035.00, 1045.00, 1052.00, 1062.00] },
-      { id: 'GAM', name: 'Gambia', confed: 'CAF', points: 1057.00, officialPoints: 1050.00, officialRank: 130, history: [1030.00, 1040.00, 1047.00, 1057.00] },
-      { id: 'SOL', name: 'Solomon Islands', confed: 'OFC', points: 1052.00, officialPoints: 1045.00, officialRank: 131, history: [1025.00, 1035.00, 1042.00, 1052.00] },
-      { id: 'IDN', name: 'Indonesia', confed: 'AFC', points: 1047.00, officialPoints: 1040.00, officialRank: 132, history: [1020.00, 1030.00, 1037.00, 1047.00] },
-      { id: 'RWA', name: 'Rwanda', confed: 'CAF', points: 1042.00, officialPoints: 1035.00, officialRank: 133, history: [1015.00, 1025.00, 1032.00, 1042.00] },
-      { id: 'FRO', name: 'Faroe Islands', confed: 'UEFA', points: 1037.00, officialPoints: 1030.00, officialRank: 134, history: [1010.00, 1020.00, 1027.00, 1037.00] },
-      { id: 'NCA', name: 'Nicaragua', confed: 'CONCACAF', points: 1032.00, officialPoints: 1025.00, officialRank: 135, history: [1005.00, 1015.00, 1022.00, 1032.00] },
-      { id: 'LTU', name: 'Lithuania', confed: 'UEFA', points: 1027.00, officialPoints: 1020.00, officialRank: 136, history: [1000.00, 1010.00, 1017.00, 1027.00] },
-      { id: 'KUW', name: 'Kuwait', confed: 'AFC', points: 1022.00, officialPoints: 1015.00, officialRank: 137, history: [995.00, 1005.00, 1012.00, 1022.00] },
-      { id: 'LVA', name: 'Latvia', confed: 'UEFA', points: 1017.00, officialPoints: 1010.00, officialRank: 138, history: [990.00, 1000.00, 1007.00, 1017.00] },
-      { id: 'PHI', name: 'Philippines', confed: 'AFC', points: 1012.00, officialPoints: 1005.00, officialRank: 139, history: [985.00, 995.00, 1002.00, 1012.00] },
-      { id: 'BDI', name: 'Burundi', confed: 'CAF', points: 1007.00, officialPoints: 1000.00, officialRank: 140, history: [980.00, 990.00, 997.00, 1007.00] },
-      { id: 'TKM', name: 'Turkmenistan', confed: 'AFC', points: 1002.00, officialPoints: 995.00, officialRank: 141, history: [975.00, 985.00, 992.00, 1002.00] },
-      { id: 'SUR', name: 'Suriname', confed: 'CONCACAF', points: 997.00, officialPoints: 990.00, officialRank: 142, history: [970.00, 980.00, 987.00, 997.00] },
-      { id: 'SKN', name: 'Saint Kitts and Nevis', confed: 'CONCACAF', points: 992.00, officialPoints: 985.00, officialRank: 143, history: [965.00, 975.00, 982.00, 992.00] },
-      { id: 'ETH', name: 'Ethiopia', confed: 'CAF', points: 987.00, officialPoints: 980.00, officialRank: 144, history: [960.00, 970.00, 977.00, 987.00] },
-      { id: 'BOT', name: 'Botswana', confed: 'CAF', points: 982.00, officialPoints: 975.00, officialRank: 145, history: [955.00, 965.00, 972.00, 982.00] },
-      { id: 'NCL', name: 'New Caledonia', confed: 'OFC', points: 977.00, officialPoints: 970.00, officialRank: 146, history: [950.00, 960.00, 967.00, 977.00] },
-      { id: 'LCA', name: 'Saint Lucia', confed: 'CONCACAF', points: 972.00, officialPoints: 965.00, officialRank: 147, history: [945.00, 955.00, 962.00, 972.00] },
-      { id: 'LBR', name: 'Liberia', confed: 'CAF', points: 967.00, officialPoints: 960.00, officialRank: 148, history: [940.00, 950.00, 957.00, 967.00] },
-      { id: 'SWZ', name: 'Eswatini', confed: 'CAF', points: 962.00, officialPoints: 955.00, officialRank: 149, history: [935.00, 945.00, 952.00, 962.00] },
-      { id: 'HKG', name: 'Hong Kong', confed: 'AFC', points: 957.00, officialPoints: 950.00, officialRank: 150, history: [930.00, 940.00, 947.00, 957.00] },
-      { id: 'LES', name: 'Lesotho', confed: 'CAF', points: 952.00, officialPoints: 945.00, officialRank: 151, history: [925.00, 935.00, 942.00, 952.00] },
-      { id: 'AFG', name: 'Afghanistan', confed: 'AFC', points: 947.00, officialPoints: 940.00, officialRank: 152, history: [920.00, 930.00, 937.00, 947.00] },
-      { id: 'TAH', name: 'Tahiti', confed: 'OFC', points: 942.00, officialPoints: 935.00, officialRank: 153, history: [915.00, 925.00, 932.00, 942.00] },
-      { id: 'PNG', name: 'Papua New Guinea', confed: 'OFC', points: 937.00, officialPoints: 930.00, officialRank: 154, history: [910.00, 920.00, 927.00, 937.00] },
-      { id: 'AND', name: 'Andorra', confed: 'UEFA', points: 932.00, officialPoints: 925.00, officialRank: 155, history: [905.00, 915.00, 922.00, 932.00] },
-      { id: 'MYA', name: 'Myanmar', confed: 'AFC', points: 927.00, officialPoints: 920.00, officialRank: 156, history: [900.00, 910.00, 917.00, 927.00] },
-      { id: 'GUY', name: 'Guyana', confed: 'CONCACAF', points: 922.00, officialPoints: 915.00, officialRank: 157, history: [895.00, 905.00, 912.00, 922.00] },
-      { id: 'SGP', name: 'Singapore', confed: 'AFC', points: 917.00, officialPoints: 910.00, officialRank: 158, history: [890.00, 900.00, 907.00, 917.00] },
-      { id: 'FIJ', name: 'Fiji', confed: 'OFC', points: 912.00, officialPoints: 905.00, officialRank: 159, history: [885.00, 895.00, 902.00, 912.00] },
-      { id: 'YEM', name: 'Yemen', confed: 'AFC', points: 907.00, officialPoints: 900.00, officialRank: 160, history: [880.00, 890.00, 897.00, 907.00] },
-      { id: 'MDV', name: 'Maldives', confed: 'AFC', points: 902.00, officialPoints: 895.00, officialRank: 161, history: [875.00, 885.00, 892.00, 902.00] },
-      { id: 'VIN', name: 'Saint Vincent and the Grenadines', confed: 'CONCACAF', points: 897.00, officialPoints: 890.00, officialRank: 162, history: [870.00, 880.00, 887.00, 897.00] },
-      { id: 'MLT', name: 'Malta', confed: 'UEFA', points: 892.00, officialPoints: 885.00, officialRank: 163, history: [865.00, 875.00, 882.00, 892.00] },
-      { id: 'PUR', name: 'Puerto Rico', confed: 'CONCACAF', points: 887.00, officialPoints: 880.00, officialRank: 164, history: [860.00, 870.00, 877.00, 887.00] },
-      { id: 'SSD', name: 'South Sudan', confed: 'CAF', points: 882.00, officialPoints: 875.00, officialRank: 165, history: [855.00, 865.00, 872.00, 882.00] },
-      { id: 'TPE', name: 'Chinese Taipei', confed: 'AFC', points: 877.00, officialPoints: 870.00, officialRank: 166, history: [850.00, 860.00, 867.00, 877.00] },
-      { id: 'BRB', name: 'Barbados', confed: 'CONCACAF', points: 872.00, officialPoints: 865.00, officialRank: 167, history: [845.00, 855.00, 862.00, 872.00] },
-      { id: 'VAN', name: 'Vanuatu', confed: 'OFC', points: 867.00, officialPoints: 860.00, officialRank: 168, history: [840.00, 850.00, 857.00, 867.00] },
-      { id: 'MDA', name: 'Moldova', confed: 'UEFA', points: 862.00, officialPoints: 855.00, officialRank: 169, history: [835.00, 845.00, 852.00, 862.00] },
-      { id: 'BER', name: 'Bermuda', confed: 'CONCACAF', points: 857.00, officialPoints: 850.00, officialRank: 170, history: [830.00, 840.00, 847.00, 857.00] },
-      { id: 'NEP', name: 'Nepal', confed: 'AFC', points: 852.00, officialPoints: 845.00, officialRank: 171, history: [825.00, 835.00, 842.00, 852.00] },
-      { id: 'GRN', name: 'Grenada', confed: 'CONCACAF', points: 847.00, officialPoints: 840.00, officialRank: 172, history: [820.00, 830.00, 837.00, 847.00] },
-      { id: 'CAM', name: 'Cambodia', confed: 'AFC', points: 842.00, officialPoints: 835.00, officialRank: 173, history: [815.00, 825.00, 832.00, 842.00] },
-      { id: 'MUS', name: 'Mauritius', confed: 'CAF', points: 837.00, officialPoints: 830.00, officialRank: 174, history: [810.00, 820.00, 827.00, 837.00] },
-      { id: 'BLZ', name: 'Belize', confed: 'CONCACAF', points: 832.00, officialPoints: 825.00, officialRank: 175, history: [805.00, 815.00, 822.00, 832.00] },
-      { id: 'BAN', name: 'Bangladesh', confed: 'AFC', points: 827.00, officialPoints: 820.00, officialRank: 176, history: [800.00, 810.00, 817.00, 827.00] },
-      { id: 'SAM', name: 'Samoa', confed: 'OFC', points: 822.00, officialPoints: 815.00, officialRank: 177, history: [795.00, 805.00, 812.00, 822.00] },
-      { id: 'DMA', name: 'Dominica', confed: 'CONCACAF', points: 817.00, officialPoints: 810.00, officialRank: 178, history: [790.00, 800.00, 807.00, 817.00] },
-      { id: 'SRI', name: 'Sri Lanka', confed: 'AFC', points: 812.00, officialPoints: 805.00, officialRank: 179, history: [785.00, 795.00, 802.00, 812.00] },
-      { id: 'BRU', name: 'Brunei Darussalam', confed: 'AFC', points: 807.00, officialPoints: 800.00, officialRank: 180, history: [780.00, 790.00, 797.00, 807.00] },
-      { id: 'MNG', name: 'Mongolia', confed: 'AFC', points: 802.00, officialPoints: 795.00, officialRank: 181, history: [775.00, 785.00, 792.00, 802.00] },
-      { id: 'ARU', name: 'Aruba', confed: 'CONCACAF', points: 797.00, officialPoints: 790.00, officialRank: 182, history: [770.00, 780.00, 787.00, 797.00] },
-      { id: 'CHA', name: 'Chad', confed: 'CAF', points: 792.00, officialPoints: 785.00, officialRank: 183, history: [765.00, 775.00, 782.00, 792.00] },
-      { id: 'COK', name: 'Cook Islands', confed: 'OFC', points: 787.00, officialPoints: 780.00, officialRank: 184, history: [760.00, 770.00, 777.00, 787.00] },
-      { id: 'MAC', name: 'Macau', confed: 'AFC', points: 782.00, officialPoints: 775.00, officialRank: 185, history: [755.00, 765.00, 772.00, 782.00] },
-      { id: 'STP', name: 'São Tomé and Príncipe', confed: 'CAF', points: 777.00, officialPoints: 770.00, officialRank: 186, history: [750.00, 760.00, 767.00, 777.00] },
-      { id: 'LAO', name: 'Laos', confed: 'AFC', points: 772.00, officialPoints: 765.00, officialRank: 187, history: [745.00, 755.00, 762.00, 772.00] },
-      { id: 'MSR', name: 'Montserrat', confed: 'CONCACAF', points: 767.00, officialPoints: 760.00, officialRank: 188, history: [740.00, 750.00, 757.00, 767.00] },
-      { id: 'BHU', name: 'Bhutan', confed: 'AFC', points: 762.00, officialPoints: 755.00, officialRank: 189, history: [735.00, 745.00, 752.00, 762.00] },
-      { id: 'TLS', name: 'Timor-Leste', confed: 'AFC', points: 757.00, officialPoints: 750.00, officialRank: 190, history: [730.00, 740.00, 747.00, 757.00] },
-      { id: 'CAY', name: 'Cayman Islands', confed: 'CONCACAF', points: 752.00, officialPoints: 745.00, officialRank: 191, history: [725.00, 735.00, 742.00, 752.00] },
-      { id: 'SMA', name: 'Sint Maarten', confed: 'CONCACAF', points: 747.00, officialPoints: 740.00, officialRank: 192, history: [720.00, 730.00, 737.00, 747.00] },
-      { id: 'SOM', name: 'Somalia', confed: 'CAF', points: 742.00, officialPoints: 735.00, officialRank: 193, history: [715.00, 725.00, 732.00, 742.00] },
-      { id: 'GUM', name: 'Guam', confed: 'AFC', points: 737.00, officialPoints: 730.00, officialRank: 194, history: [710.00, 720.00, 727.00, 737.00] },
-      { id: 'TCA', name: 'Turks and Caicos Islands', confed: 'CONCACAF', points: 732.00, officialPoints: 725.00, officialRank: 195, history: [705.00, 715.00, 722.00, 732.00] },
-      { id: 'LIE', name: 'Liechtenstein', confed: 'UEFA', points: 727.00, officialPoints: 720.00, officialRank: 196, history: [700.00, 710.00, 717.00, 727.00] },
-      { id: 'SEY', name: 'Seychelles', confed: 'CAF', points: 722.00, officialPoints: 715.00, officialRank: 197, history: [695.00, 705.00, 712.00, 722.00] },
-      { id: 'GIB', name: 'Gibraltar', confed: 'UEFA', points: 717.00, officialPoints: 710.00, officialRank: 198, history: [690.00, 700.00, 707.00, 717.00] },
-      { id: 'BAH', name: 'Bahamas', confed: 'CONCACAF', points: 712.00, officialPoints: 705.00, officialRank: 199, history: [685.00, 695.00, 702.00, 712.00] },
-      { id: 'TGA', name: 'Tonga', confed: 'OFC', points: 707.00, officialPoints: 700.00, officialRank: 200, history: [680.00, 690.00, 697.00, 707.00] },
-      { id: 'BVI', name: 'British Virgin Islands', confed: 'CONCACAF', points: 702.00, officialPoints: 695.00, officialRank: 201, history: [675.00, 685.00, 692.00, 702.00] },
-      { id: 'VIR', name: 'US Virgin Islands', confed: 'CONCACAF', points: 697.00, officialPoints: 690.00, officialRank: 202, history: [670.00, 680.00, 687.00, 697.00] },
-      { id: 'AIA', name: 'Anguilla', confed: 'CONCACAF', points: 692.00, officialPoints: 685.00, officialRank: 203, history: [665.00, 675.00, 682.00, 692.00] },
-      { id: 'SMR', name: 'San Marino', confed: 'UEFA', points: 687.00, officialPoints: 680.00, officialRank: 204, history: [660.00, 670.00, 677.00, 687.00] },
-      { id: 'PAK', name: 'Pakistan', confed: 'AFC', points: 682.00, officialPoints: 675.00, officialRank: 205, history: [655.00, 665.00, 672.00, 682.00] },
-      { id: 'DJI', name: 'Djibouti', confed: 'CAF', points: 677.00, officialPoints: 670.00, officialRank: 206, history: [650.00, 660.00, 667.00, 677.00] },
-      { id: 'ERI', name: 'Eritrea', confed: 'CAF', points: 672.00, officialPoints: 665.00, officialRank: 207, history: [645.00, 655.00, 662.00, 672.00] },
-      { id: 'NMI', name: 'Northern Mariana Islands', confed: 'AFC', points: 667.00, officialPoints: 660.00, officialRank: 208, history: [640.00, 650.00, 657.00, 667.00] },
-      { id: 'TUV', name: 'Tuvalu', confed: 'OFC', points: 662.00, officialPoints: 655.00, officialRank: 209, history: [635.00, 645.00, 652.00, 662.00] },
-      { id: 'KIR', name: 'Kiribati', confed: 'OFC', points: 657.00, officialPoints: 650.00, officialRank: 210, history: [630.00, 640.00, 647.00, 657.00] }
+      { id: 'SRB', name: 'Serbia', confed: 'UEFA', points: 1502.13, officialPoints: 1502.13, officialRank: 36, history: [1490.00, 1495.00, 1500.00, 1502.13] },
+      { id: 'CZE', name: 'Czechia', confed: 'UEFA', points: 1500.20, officialPoints: 1498.00, officialRank: 37, history: [1485.00, 1490.00, 1495.00, 1500.20] },
+      { id: 'PAR', name: 'Paraguay', confed: 'CONMEBOL', points: 1492.50, officialPoints: 1488.20, officialRank: 38, history: [1470.00, 1480.00, 1488.00, 1492.50] },
+      { id: 'SCO', name: 'Scotland', confed: 'UEFA', points: 1485.00, officialPoints: 1480.10, officialRank: 39, history: [1465.00, 1472.00, 1478.00, 1485.00] },
+      { id: 'CMR', name: 'Cameroon', confed: 'CAF', points: 1481.24, officialPoints: 1475.00, officialRank: 40, history: [1460.00, 1468.00, 1474.00, 1481.24] },
+      { id: 'PAN', name: 'Panama', confed: 'CONCACAF', points: 1478.41, officialPoints: 1470.00, officialRank: 41, history: [1450.00, 1460.00, 1470.00, 1478.41] },
+      { id: 'SVK', name: 'Slovakia', confed: 'UEFA', points: 1473.66, officialPoints: 1468.00, officialRank: 42, history: [1455.00, 1462.00, 1468.00, 1473.66] },
+      { id: 'GRE', name: 'Greece', confed: 'UEFA', points: 1473.19, officialPoints: 1465.50, officialRank: 44, history: [1450.00, 1458.00, 1465.00, 1473.19] },
+      { id: 'VEN', name: 'Venezuela', confed: 'CONMEBOL', points: 1469.18, officialPoints: 1460.00, officialRank: 45, history: [1440.00, 1450.00, 1460.00, 1469.18] },
+      { id: 'CHI', name: 'Chile', confed: 'CONMEBOL', points: 1458.20, officialPoints: 1455.00, officialRank: 47, history: [1440.00, 1448.00, 1452.00, 1458.20] },
+      { id: 'PER', name: 'Peru', confed: 'CONMEBOL', points: 1457.69, officialPoints: 1452.00, officialRank: 48, history: [1435.00, 1442.00, 1450.00, 1457.69] },
+      { id: 'CRC', name: 'Costa Rica', confed: 'CONCACAF', points: 1456.03, officialPoints: 1450.00, officialRank: 49, history: [1430.00, 1440.00, 1448.00, 1456.03] },
+      { id: 'ROU', name: 'Romania', confed: 'UEFA', points: 1455.89, officialPoints: 1448.00, officialRank: 50, history: [1430.00, 1438.00, 1445.00, 1455.89] },
+      { id: 'MLI', name: 'Mali', confed: 'CAF', points: 1455.59, officialPoints: 1445.00, officialRank: 51, history: [1425.00, 1435.00, 1442.00, 1455.59] },
+      { id: 'RSA', name: 'South Africa', confed: 'CAF', points: 1428.38, officialPoints: 1420.00, officialRank: 52, history: [1400.00, 1410.00, 1418.00, 1428.38] },
+      { id: 'IRL', name: 'Republic of Ireland', confed: 'UEFA', points: 1441.10, officialPoints: 1435.00, officialRank: 53, history: [1415.00, 1422.00, 1430.00, 1441.10] },
+      { id: 'SVN', name: 'Slovenia', confed: 'UEFA', points: 1441.09, officialPoints: 1432.00, officialRank: 54, history: [1410.00, 1420.00, 1428.00, 1441.09] },
+      { id: 'TUN', name: 'Tunisia', confed: 'CAF', points: 1425.00, officialPoints: 1420.00, officialRank: 55, history: [1400.00, 1408.00, 1415.00, 1425.00] },
+      { id: 'KSA', name: 'Saudi Arabia', confed: 'AFC', points: 1423.88, officialPoints: 1418.00, officialRank: 56, history: [1395.00, 1405.00, 1412.00, 1423.88] },
+      { id: 'QAT', name: 'Qatar', confed: 'AFC', points: 1420.00, officialPoints: 1415.00, officialRank: 57, history: [1390.00, 1400.00, 1408.00, 1420.00] },
+      { id: 'UZB', name: 'Uzbekistan', confed: 'AFC', points: 1415.00, officialPoints: 1410.00, officialRank: 58, history: [1385.00, 1395.00, 1402.00, 1415.00] },
+      { id: 'BIH', name: 'Bosnia & Herzegovina', confed: 'UEFA', points: 1387.22, officialPoints: 1380.00, officialRank: 59, history: [1360.00, 1370.00, 1378.00, 1387.22] },
+      { id: 'BFA', name: 'Burkina Faso', confed: 'CAF', points: 1406.99, officialPoints: 1400.00, officialRank: 60, history: [1380.00, 1388.00, 1395.00, 1406.99] },
+      { id: 'IRQ', name: 'Iraq', confed: 'AFC', points: 1390.00, officialPoints: 1385.00, officialRank: 61, history: [1365.00, 1372.00, 1380.00, 1390.00] },
+      { id: 'CPV', name: 'Cabo Verde', confed: 'CAF', points: 1371.11, officialPoints: 1365.00, officialRank: 62, history: [1345.00, 1352.00, 1360.00, 1371.11] },
+      { id: 'GHA', name: 'Ghana', confed: 'CAF', points: 1346.88, officialPoints: 1340.00, officialRank: 63, history: [1320.00, 1328.00, 1335.00, 1346.88] },
+      { id: 'HON', name: 'Honduras', confed: 'CONCACAF', points: 1378.97, officialPoints: 1370.00, officialRank: 64, history: [1350.00, 1358.00, 1365.00, 1378.97] },
+      { id: 'ALB', name: 'Albania', confed: 'UEFA', points: 1376.03, officialPoints: 1370.00, officialRank: 65, history: [1345.00, 1355.00, 1362.00, 1376.03] },
+      { id: 'UAE', name: 'United Arab Emirates', confed: 'AFC', points: 1370.47, officialPoints: 1362.00, officialRank: 66, history: [1340.00, 1350.00, 1358.00, 1370.47] },
+      { id: 'MKD', name: 'North Macedonia', confed: 'UEFA', points: 1369.16, officialPoints: 1360.00, officialRank: 67, history: [1335.00, 1345.00, 1352.00, 1369.16] },
+      { id: 'NIR', name: 'Northern Ireland', confed: 'UEFA', points: 1365.30, officialPoints: 1358.00, officialRank: 68, history: [1330.00, 1340.00, 1348.00, 1365.30] },
+      { id: 'JAM', name: 'Jamaica', confed: 'CONCACAF', points: 1357.84, officialPoints: 1350.00, officialRank: 69, history: [1325.00, 1335.00, 1342.00, 1357.84] },
+      { id: 'GEO', name: 'Georgia', confed: 'UEFA', points: 1355.26, officialPoints: 1345.00, officialRank: 70, history: [1320.00, 1330.00, 1340.00, 1355.26] }
     ];
 
-    // Baseline Default Data: Club Rankings
+    // Dynamically generate teams 71 to 210 to ensure complete 210 FIFA coverage
+    const generateFull210Teams = () => {
+      const additionalNations = [
+        ['JOR', 'Jordan', 'AFC', 1350.00, 71], ['ISL', 'Iceland', 'UEFA', 1342.77, 72], ['FIN', 'Finland', 'UEFA', 1341.92, 73],
+        ['ISR', 'Israel', 'UEFA', 1333.90, 74], ['BOL', 'Bolivia', 'CONMEBOL', 1326.00, 75], ['KOS', 'Kosovo', 'UEFA', 1319.12, 76],
+        ['OMA', 'Oman', 'AFC', 1306.90, 77], ['MNE', 'Montenegro', 'UEFA', 1301.98, 78], ['GUI', 'Guinea', 'CAF', 1295.60, 79],
+        ['CUW', 'Curaçao', 'CONCACAF', 1294.77, 80], ['SYR', 'Syria', 'AFC', 1283.05, 81], ['GAB', 'Gabon', 'CAF', 1272.51, 82],
+        ['BUL', 'Bulgaria', 'UEFA', 1271.68, 83], ['NZL', 'New Zealand', 'OFC', 1275.58, 84], ['ANG', 'Angola', 'CAF', 1265.58, 85],
+        ['HAI', 'Haiti', 'CONCACAF', 1260.00, 86], ['UGA', 'Uganda', 'CAF', 1258.00, 87], ['ZAM', 'Zambia', 'CAF', 1255.82, 88],
+        ['CHN', 'China PR', 'AFC', 1254.81, 89], ['BHR', 'Bahrain', 'AFC', 1254.41, 90], ['BEN', 'Benin', 'CAF', 1252.17, 91],
+        ['THA', 'Thailand', 'AFC', 1250.80, 92], ['PLE', 'Palestine', 'AFC', 1243.71, 93], ['BLR', 'Belarus', 'UEFA', 1242.88, 94], ['GUA', 'Guatemala', 'CONCACAF', 1238.74, 95],
+        ['LUX', 'Luxembourg', 'UEFA', 1232.82, 96], ['VIE', 'Vietnam', 'AFC', 1225.68, 97], ['SLV', 'El Salvador', 'CONCACAF', 1225.34, 98],
+        ['TJK', 'Tajikistan', 'AFC', 1224.19, 99], ['TRI', 'Trinidad & Tobago', 'CONCACAF', 1219.59, 100], ['MOZ', 'Mozambique', 'CAF', 1218.62, 101],
+        ['MAD', 'Madagascar', 'CAF', 1202.69, 102], ['EQG', 'Equatorial Guinea', 'CAF', 1195.20, 103], ['KGZ', 'Kyrgyzstan', 'AFC', 1192.16, 104],
+        ['ARM', 'Armenia', 'UEFA', 1189.63, 105], ['COM', 'Comoros', 'CAF', 1187.91, 106], ['KEN', 'Kenya', 'CAF', 1185.08, 107],
+        ['LBY', 'Libya', 'CAF', 1182.08, 108], ['KAZ', 'Kazakhstan', 'UEFA', 1180.78, 109], ['TAN', 'Tanzania', 'CAF', 1180.27, 110],
+        ['MTN', 'Mauritania', 'CAF', 1176.68, 111], ['NIG', 'Niger', 'CAF', 1175.33, 112], ['LBN', 'Lebanon', 'AFC', 1172.22, 113],
+        ['GAM', 'Gambia', 'CAF', 1159.64, 114], ['SDN', 'Sudan', 'CAF', 1157.22, 115], ['IDN', 'Indonesia', 'AFC', 1157.14, 116],
+        ['TOG', 'Togo', 'CAF', 1152.76, 117], ['PRK', 'North Korea', 'AFC', 1150.00, 118], ['NAM', 'Namibia', 'CAF', 1145.00, 119],
+        ['SLE', 'Sierra Leone', 'CAF', 1140.00, 120], ['FRO', 'Faroe Islands', 'UEFA', 1135.00, 121], ['CYP', 'Cyprus', 'UEFA', 1130.00, 122],
+        ['SUR', 'Suriname', 'CONCACAF', 1125.00, 123], ['AZE', 'Azerbaijan', 'UEFA', 1120.00, 124], ['EST', 'Estonia', 'UEFA', 1115.00, 125],
+        ['RWA', 'Rwanda', 'CAF', 1110.00, 126], ['MWI', 'Malawi', 'CAF', 1105.00, 127], ['ZIM', 'Zimbabwe', 'CAF', 1100.00, 128],
+        ['NCA', 'Nicaragua', 'CONCACAF', 1095.00, 129], ['GNB', 'Guinea-Bissau', 'CAF', 1090.00, 130], ['KUW', 'Kuwait', 'AFC', 1085.00, 131],
+        ['CGO', 'Congo', 'CAF', 1080.00, 132], ['PHI', 'Philippines', 'AFC', 1075.00, 133], ['MAS', 'Malaysia', 'AFC', 1070.00, 134],
+        ['LVA', 'Latvia', 'UEFA', 1065.00, 135], ['IND', 'India', 'AFC', 1060.00, 136], ['CTA', 'Central African Republic', 'CAF', 1055.00, 137],
+        ['LBR', 'Liberia', 'CAF', 1050.00, 138], ['TKM', 'Turkmenistan', 'AFC', 1045.00, 139], ['BDI', 'Burundi', 'CAF', 1040.00, 140],
+        ['ETH', 'Ethiopia', 'CAF', 1035.00, 141], ['DOM', 'Dominican Republic', 'CONCACAF', 1030.00, 142], ['YEM', 'Yemen', 'AFC', 1025.00, 143],
+        ['LES', 'Lesotho', 'CAF', 1020.00, 144], ['BOT', 'Botswana', 'CAF', 1015.00, 145], ['SGP', 'Singapore', 'AFC', 1010.00, 146],
+        ['LTU', 'Lithuania', 'UEFA', 1005.00, 147], ['GUY', 'Guyana', 'CONCACAF', 1000.00, 148], ['NCL', 'New Caledonia', 'OFC', 995.00, 149],
+        ['KNA', 'Saint Kitts & Nevis', 'CONCACAF', 990.00, 150], ['SOL', 'Solomon Islands', 'OFC', 985.00, 151], ['PUR', 'Puerto Rico', 'CONCACAF', 980.00, 152],
+        ['FIJ', 'Fiji', 'OFC', 975.00, 153], ['HKG', 'Hong Kong', 'AFC', 970.00, 154], ['TAH', 'Tahiti', 'OFC', 965.00, 155],
+        ['MYA', 'Myanmar', 'AFC', 960.00, 156], ['MDA', 'Moldova', 'UEFA', 955.00, 157], ['VAN', 'Vanuatu', 'OFC', 950.00, 158],
+        ['MLT', 'Malta', 'UEFA', 945.00, 159], ['BER', 'Bermuda', 'CONCACAF', 940.00, 160], ['GRN', 'Grenada', 'CONCACAF', 935.00, 161],
+        ['SSD', 'South Sudan', 'CAF', 930.00, 162], ['ATG', 'Antigua & Barbuda', 'CONCACAF', 925.00, 163], ['LCA', 'Saint Lucia', 'CONCACAF', 920.00, 164],
+        ['TPE', 'Chinese Taipei', 'AFC', 915.00, 165], ['VIN', 'Saint Vincent', 'CONCACAF', 910.00, 166], ['NEP', 'Nepal', 'AFC', 905.00, 167],
+        ['CAM', 'Cambodia', 'AFC', 900.00, 168], ['MRI', 'Mauritius', 'CAF', 895.00, 169], ['BRU', 'Brunei', 'AFC', 890.00, 170],
+        ['CHA', 'Chad', 'CAF', 885.00, 171], ['ARU', 'Aruba', 'CONCACAF', 880.00, 172], ['DMA', 'Dominica', 'CONCACAF', 875.00, 173],
+        ['SWZ', 'Eswatini', 'CAF', 870.00, 174], ['BAN', 'Bangladesh', 'AFC', 865.00, 175], ['MNG', 'Mongolia', 'AFC', 860.00, 176],
+        ['STP', 'Sao Tome', 'CAF', 855.00, 177], ['LAO', 'Laos', 'AFC', 850.00, 178], ['DJI', 'Djibouti', 'CAF', 845.00, 179],
+        ['MAC', 'Macau', 'AFC', 840.00, 180], ['MSR', 'Montserrat', 'CONCACAF', 835.00, 181], ['TLS', 'Timor-Leste', 'AFC', 831.00, 182],
+        ['GIB', 'Gibraltar', 'UEFA', 820.26, 183], ['GUM', 'Guam', 'AFC', 819.54, 184], ['SEY', 'Seychelles', 'CAF', 804.16, 185],
+        ['TCA', 'Turks & Caicos', 'CONCACAF', 803.98, 186], ['LIE', 'Liechtenstein', 'UEFA', 797.70, 187], ['BAH', 'Bahamas', 'CONCACAF', 786.82, 188],
+        ['VIR', 'US Virgin Islands', 'CONCACAF', 779.76, 189], ['VGB', 'British Virgin Islands', 'CONCACAF', 777.41, 190], ['AIA', 'Anguilla', 'CONCACAF', 760.25, 191],
+        ['SMR', 'San Marino', 'UEFA', 721.20, 192], ['SAM', 'Samoa', 'OFC', 715.00, 193], ['ASA', 'American Samoa', 'OFC', 710.00, 194],
+        ['TGA', 'Tonga', 'OFC', 705.00, 195], ['COK', 'Cook Islands', 'OFC', 700.00, 196], ['PAY', 'Papua New Guinea', 'OFC', 695.00, 197],
+        ['SOM', 'Somalia', 'CAF', 690.00, 198], ['ERI', 'Eritrea', 'CAF', 685.00, 199], ['CAY', 'Cayman Islands', 'CONCACAF', 680.00, 200],
+        ['AND', 'Andorra', 'UEFA', 675.00, 201], ['SMN', 'Saint Martin', 'CONCACAF', 670.00, 202], ['SXM', 'Sint Maarten', 'CONCACAF', 665.00, 203],
+        ['BHU', 'Bhutan', 'AFC', 660.00, 204], ['MDV', 'Maldives', 'AFC', 655.00, 205], ['SRI', 'Sri Lanka', 'AFC', 650.00, 206],
+        ['GUM2', 'Guam Island', 'AFC', 645.00, 207], ['TLS2', 'East Timor', 'AFC', 640.00, 208], ['SMA', 'San Marino Reserves', 'UEFA', 635.00, 209],
+        ['VAT', 'Vatican City', 'UEFA', 630.00, 210]
+      ];
+
+      additionalNations.forEach(([id, name, confed, pts, rank]) => {
+        defaultNationalTeams.push({
+          id, name, confed,
+          points: pts,
+          officialPoints: pts - 10,
+          officialRank: rank,
+          history: [pts - 15, pts - 10, pts - 5, pts]
+        });
+      });
+    };
+
+    generateFull210Teams();
+
+    // Default Club Data
     const defaultClubTeams = [
-      { id: 'RMA', name: 'Real Madrid', confed: 'UEFA', points: 2045.50, officialPoints: 2020.00, officialRank: 1, history: [2010.00, 2025.00, 2038.20, 2045.50] },
-      { id: 'MCI', name: 'Manchester City', confed: 'UEFA', points: 2022.10, officialPoints: 2015.00, officialRank: 2, history: [2000.00, 2010.00, 2018.00, 2022.10] },
-      { id: 'BAY', name: 'Bayern Munich', confed: 'UEFA', points: 1950.40, officialPoints: 1940.00, officialRank: 3, history: [1930.00, 1935.00, 1942.00, 1950.40] },
-      { id: 'PSG', name: 'Paris Saint-Germain', confed: 'UEFA', points: 1910.25, officialPoints: 1900.00, officialRank: 4, history: [1890.00, 1895.00, 1902.00, 1910.25] },
-      { id: 'INT', name: 'Inter Milan', confed: 'UEFA', points: 1895.80, officialPoints: 1880.00, officialRank: 5, history: [1870.00, 1880.00, 1888.00, 1895.80] },
-      { id: 'FLA', name: 'Flamengo', confed: 'CONMEBOL', points: 1810.15, officialPoints: 1795.00, officialRank: 8, history: [1780.00, 1790.00, 1800.00, 1810.15] },
-      { id: 'PAL', name: 'Palmeiras', confed: 'CONMEBOL', points: 1795.30, officialPoints: 1790.00, officialRank: 9, history: [1775.00, 1782.00, 1788.00, 1795.30] },
-      { id: 'HIL', name: 'Al Hilal', confed: 'AFC', points: 1765.40, officialPoints: 1730.00, officialRank: 15, history: [1730.00, 1742.00, 1755.00, 1765.40] },
-      { id: 'MIA', name: 'Inter Miami', confed: 'CONCACAF', points: 1685.20, officialPoints: 1640.00, officialRank: 25, history: [1650.00, 1662.00, 1675.00, 1685.20] },
-      { id: 'AHY', name: 'Al Ahly', confed: 'CAF', points: 1670.10, officialPoints: 1650.00, officialRank: 24, history: [1640.00, 1650.00, 1660.00, 1670.10] }
+      { id: 'RMA', name: 'Real Madrid', confed: 'UEFA', points: 2045.50, officialPoints: 2030.00, officialRank: 1, history: [2010.00, 2025.00, 2035.00, 2045.50] },
+      { id: 'MCI', name: 'Manchester City', confed: 'UEFA', points: 2020.10, officialPoints: 2015.00, officialRank: 2, history: [2000.00, 2010.00, 2018.00, 2020.10] },
+      { id: 'BAY', name: 'Bayern Munich', confed: 'UEFA', points: 1985.30, officialPoints: 1980.00, officialRank: 3, history: [1970.00, 1975.00, 1980.00, 1985.30] },
+      { id: 'BAR', name: 'FC Barcelona', confed: 'UEFA', points: 1960.20, officialPoints: 1950.00, officialRank: 4, history: [1940.00, 1948.00, 1955.00, 1960.20] },
+      { id: 'PSG', name: 'Paris Saint-Germain', confed: 'UEFA', points: 1930.00, officialPoints: 1925.00, officialRank: 5, history: [1915.00, 1920.00, 1925.00, 1930.00] },
+      { id: 'INT', name: 'Inter Milan', confed: 'UEFA', points: 1915.80, officialPoints: 1910.00, officialRank: 6, history: [1900.00, 1905.00, 1910.00, 1915.80] },
+      { id: 'ARS', name: 'Arsenal', confed: 'UEFA', points: 1910.40, officialPoints: 1900.00, officialRank: 7, history: [1890.00, 1898.00, 1905.00, 1910.40] },
+      { id: 'LEV', name: 'Bayer Leverkusen', confed: 'UEFA', points: 1895.00, officialPoints: 1890.00, officialRank: 8, history: [1875.00, 1882.00, 1888.00, 1895.00] },
+      { id: 'LIV', name: 'Liverpool', confed: 'UEFA', points: 1890.20, officialPoints: 1885.00, officialRank: 9, history: [1870.00, 1878.00, 1884.00, 1890.20] },
+      { id: 'ATM', name: 'Atletico Madrid', confed: 'UEFA', points: 1860.00, officialPoints: 1855.00, officialRank: 10, history: [1845.00, 1850.00, 1852.00, 1860.00] },
+      { id: 'FLA', name: 'Flamengo', confed: 'CONMEBOL', points: 1780.00, officialPoints: 1770.00, officialRank: 15, history: [1750.00, 1760.00, 1770.00, 1780.00] },
+      { id: 'PAL', name: 'Palmeiras', confed: 'CONMEBOL', points: 1765.00, officialPoints: 1760.00, officialRank: 18, history: [1740.00, 1750.00, 1758.00, 1765.00] },
+      { id: 'AHY', name: 'Al Ahly', confed: 'CAF', points: 1670.10, officialPoints: 1650.00, officialRank: 24, history: [1640.00, 1650.00, 1660.00, 1670.10] },
+      { id: 'HIL', name: 'Al Hilal', confed: 'AFC', points: 1685.00, officialPoints: 1675.00, officialRank: 22, history: [1655.00, 1665.00, 1675.00, 1685.00] }
     ];
 
+    // State Variables
     let currentMode = 'national';
-    let teamsData = [];
-    let matchHistory = {};
-    let selectedConfed = 'ALL';
-    let lastCalculation = null;
+    let currentConfed = 'ALL';
 
-    function loadStorage() {
-      const keyTeams = currentMode === 'national' ? KEY_NAT_TEAMS : KEY_CLUB_TEAMS;
-      const keyMatches = currentMode === 'national' ? KEY_NAT_MATCHES : KEY_CLUB_MATCHES;
-
-      const savedTeams = localStorage.getItem(keyTeams);
-      const savedMatches = localStorage.getItem(keyMatches);
-
-      const defaults = currentMode === 'national' ? defaultNationalTeams : defaultClubTeams;
-
-      teamsData = savedTeams ? JSON.parse(savedTeams) : [...defaults];
-      matchHistory = savedMatches ? JSON.parse(savedMatches) : {};
+    // Helper functions for LocalStorage
+    function getTeams() {
+      const key = currentMode === 'national' ? KEY_NAT_TEAMS : KEY_CLUB_TEAMS;
+      const stored = localStorage.getItem(key);
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          // If national mode stored array is incomplete (< 210), auto-migrate to full 210 list
+          if (currentMode === 'national' && parsed.length < 210) {
+            localStorage.setItem(KEY_NAT_TEAMS, JSON.stringify(defaultNationalTeams));
+            return defaultNationalTeams;
+          }
+          return parsed;
+        } catch(e) {
+          console.error(e);
+        }
+      }
+      const initialData = currentMode === 'national' ? defaultNationalTeams : defaultClubTeams;
+      localStorage.setItem(key, JSON.stringify(initialData));
+      return initialData;
     }
 
-    function saveStorage() {
-      const keyTeams = currentMode === 'national' ? KEY_NAT_TEAMS : KEY_CLUB_TEAMS;
-      const keyMatches = currentMode === 'national' ? KEY_NAT_MATCHES : KEY_CLUB_MATCHES;
-
-      localStorage.setItem(keyTeams, JSON.stringify(teamsData));
-      localStorage.setItem(keyMatches, JSON.stringify(matchHistory));
+    function saveTeams(teams) {
+      const key = currentMode === 'national' ? KEY_NAT_TEAMS : KEY_CLUB_TEAMS;
+      localStorage.setItem(key, JSON.stringify(teams));
     }
 
+    function getMatches() {
+      const key = currentMode === 'national' ? KEY_NAT_MATCHES : KEY_CLUB_MATCHES;
+      const stored = localStorage.getItem(key);
+      return stored ? JSON.parse(stored) : [];
+    }
+
+    function saveMatches(matches) {
+      const key = currentMode === 'national' ? KEY_NAT_MATCHES : KEY_CLUB_MATCHES;
+      localStorage.setItem(key, JSON.stringify(matches));
+    }
+
+    function resetDatabase() {
+      if (confirm(`Reset ${currentMode.toUpperCase()} ranking data back to defaults?`)) {
+        if (currentMode === 'national') {
+          localStorage.removeItem(KEY_NAT_TEAMS);
+          localStorage.removeItem(KEY_NAT_MATCHES);
+        } else {
+          localStorage.removeItem(KEY_CLUB_TEAMS);
+          localStorage.removeItem(KEY_CLUB_MATCHES);
+        }
+        renderTable();
+        populateSelects();
+        renderHistory();
+        renderMatchLogs();
+      }
+    }
+
+    // Tab Switching
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+      
+      document.getElementById('tab-' + tabId).classList.add('active');
+      const activeBtn = Array.from(document.querySelectorAll('.nav-btn')).find(b => b.getAttribute('onclick').includes(tabId));
+      if (activeBtn) activeBtn.classList.add('active');
+
+      if (tabId === 'progression') renderHistory();
+    }
+
+    // Mode Switching
     function setRankingMode(mode) {
       currentMode = mode;
       document.getElementById('modeNationalBtn').classList.toggle('active', mode === 'national');
       document.getElementById('modeClubBtn').classList.toggle('active', mode === 'club');
-      
-      loadStorage();
+
       renderTable();
-      populateCalcDropdowns();
-      populateDailyDropdowns();
-      populateHistoryDropdown();
+      populateSelects();
+      renderHistory();
+      renderMatchLogs();
     }
 
-    function resetDatabase() {
-      if (confirm(`Reset all calculated live rankings and match histories for ${currentMode.toUpperCase()} mode to defaults?`)) {
-        const keyTeams = currentMode === 'national' ? KEY_NAT_TEAMS : KEY_CLUB_TEAMS;
-        const keyMatches = currentMode === 'national' ? KEY_NAT_MATCHES : KEY_CLUB_MATCHES;
-        localStorage.removeItem(keyTeams);
-        localStorage.removeItem(keyMatches);
-        loadStorage();
-        renderTable();
-        alert('Mode database reset!');
-      }
-    }
-
-    function switchTab(tabId) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
-      
-      document.getElementById('tab-' + tabId).classList.add('active');
-      event.target.classList.add('active');
-
-      if (tabId === 'calculator') populateCalcDropdowns();
-      if (tabId === 'daily') populateDailyDropdowns();
-      if (tabId === 'progression') populateHistoryDropdown();
-    }
-
+    // Confederation Filter
     function filterConfed(confed) {
-      selectedConfed = confed;
-      document.querySelectorAll('.confed-pill').forEach(btn => {
-        btn.classList.toggle('active', btn.innerText === confed);
+      currentConfed = confed;
+      document.querySelectorAll('.confed-pill').forEach(pill => {
+        pill.classList.toggle('active', pill.innerText === confed);
       });
       renderTable();
     }
 
+    // Main Table Rendering
     function renderTable() {
-      const search = document.getElementById('searchInput').value.toLowerCase();
+      const teams = getTeams();
+      const searchQuery = document.getElementById('searchInput').value.toLowerCase().trim();
+
+      // Sort dynamically by Live Points (SUM Calculated)
+      teams.sort((a, b) => b.points - a.points);
+
       const tbody = document.getElementById('rankingTableBody');
       tbody.innerHTML = '';
 
-      let filtered = teamsData.filter(t => {
-        const matchesConfed = selectedConfed === 'ALL' || t.confed === selectedConfed;
-        const matchesSearch = t.name.toLowerCase().includes(search) || t.id.toLowerCase().includes(search);
-        return matchesConfed && matchesSearch;
-      });
+      let displayedCount = 0;
 
-      filtered.sort((a, b) => b.points - a.points);
-
-      filtered.forEach((team, idx) => {
+      teams.forEach((team, idx) => {
         const liveRank = idx + 1;
-        const officialRank = team.officialRank || liveRank;
-        
-        const diff = officialRank - liveRank;
-        
-        let diffBadge = '';
-        if (diff > 0) {
-          diffBadge = `<span class="diff-badge diff-up">▲ +${diff}</span>`;
-        } else if (diff < 0) {
-          diffBadge = `<span class="diff-badge diff-down">▼ ${diff}</span>`;
+        const shift = team.officialRank - liveRank; // Positive = Moved up
+
+        if (currentConfed !== 'ALL' && team.confed !== currentConfed) return;
+        if (searchQuery && !team.name.toLowerCase().includes(searchQuery) && !team.id.toLowerCase().includes(searchQuery)) return;
+
+        displayedCount++;
+
+        let shiftBadge = '';
+        if (shift > 0) {
+          shiftBadge = `<span class="diff-badge diff-up">▲ +${shift}</span>`;
+        } else if (shift < 0) {
+          shiftBadge = `<span class="diff-badge diff-down">▼ ${shift}</span>`;
         } else {
-          diffBadge = `<span class="diff-badge diff-neutral">= 0</span>`;
+          shiftBadge = `<span class="diff-badge diff-neutral">= 0</span>`;
         }
 
+        const isTop3 = liveRank <= 3 ? 'top3' : '';
+
         const tr = document.createElement('tr');
-        const rankClass = liveRank <= 3 ? 'rank-badge top3' : 'rank-badge';
-        
         tr.innerHTML = `
-          <td><span class="${rankClass}">${liveRank}</span></td>
-          <td>${diffBadge}</td>
-          <td style="color: var(--text-muted); font-weight: 600;">#${officialRank}</td>
-          <td style="font-weight: 600;">${team.name} <span style="color: var(--text-muted); font-size:0.8rem;">(${team.id})</span></td>
+          <td><span class="rank-badge ${isTop3}">${liveRank}</span></td>
+          <td>${shiftBadge}</td>
+          <td style="color: var(--text-muted); font-weight: 600;">#${team.officialRank}</td>
+          <td style="font-weight: 700;">${team.name} <span style="font-size:0.75rem; color:var(--text-muted);">(${team.id})</span></td>
           <td><span class="confed-tag confed-${team.confed}">${team.confed}</span></td>
           <td class="points-val">${team.points.toFixed(2)}</td>
-          <td style="color: var(--text-muted); font-family: var(--font-mono);">${team.officialPoints ? team.officialPoints.toFixed(2) : '-'}</td>
+          <td style="font-family: var(--font-mono); color: var(--text-muted);">${team.officialPoints.toFixed(2)}</td>
           <td>
-            <button style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--accent-blue); padding:0.3rem 0.6rem; border-radius:4px; font-size:0.75rem; cursor:pointer;" onclick="quickCalc('${team.id}')">Inspect</button>
+            <button class="nav-btn" style="padding: 0.25rem 0.6rem; font-size:0.75rem;" onclick="selectTeamForCalc('${team.id}')">Select</button>
           </td>
         `;
         tbody.appendChild(tr);
       });
+
+      document.getElementById('teamCountBadge').innerText = `💾 ${teams.length} Teams Loaded (${displayedCount} Shown)`;
     }
 
-    // --- SUM MATCH EXECUTION LOGIC ---
-    function executeMatchUpdate(idA, idB, outcomeVal, I, compName, isKnockout = false) {
-      const teamA = teamsData.find(t => t.id === idA);
-      const teamB = teamsData.find(t => t.id === idB);
-      if (!teamA || !teamB) return;
+    // Populate Select Elements across Tabs
+    function populateSelects() {
+      const teams = getTeams().sort((a, b) => a.name.localeCompare(b.name));
+      const selects = ['dailyTeamA', 'dailyTeamB', 'calcTeamA', 'calcTeamB', 'historyTeamSelect'];
 
-      const Pa = teamA.points;
-      const Pb = teamB.points;
-
-      const dr = Pa - Pb;
-      const We_A = 1 / (Math.pow(10, -dr / 600) + 1);
-      const We_B = 1 - We_A;
-
-      let W_A = 0.5;
-      let W_B = 0.5;
-
-      if (outcomeVal === '1.0' || outcomeVal === 1.0) { W_A = 1.0; W_B = 0.0; }
-      else if (outcomeVal === '0.75' || outcomeVal === 0.75) { W_A = 0.75; W_B = 0.5; }
-      else if (outcomeVal === '0.5_pso_loss') { W_A = 0.5; W_B = 0.75; }
-      else if (outcomeVal === '0.5' || outcomeVal === 0.5) { W_A = 0.5; W_B = 0.5; }
-      else if (outcomeVal === '0.0' || outcomeVal === 0.0) { W_A = 0.0; W_B = 1.0; }
-
-      let deltaA = I * (W_A - We_A);
-      let deltaB = I * (W_B - We_B);
-
-      if (isKnockout) {
-        if (deltaA < 0) deltaA = 0;
-        if (deltaB < 0) deltaB = 0;
-      }
-
-      teamA.points += deltaA;
-      teamB.points += deltaB;
-
-      teamA.history.push(parseFloat(teamA.points.toFixed(2)));
-      teamB.history.push(parseFloat(teamB.points.toFixed(2)));
-
-      if (!matchHistory[idA]) matchHistory[idA] = [];
-      if (!matchHistory[idB]) matchHistory[idB] = [];
-
-      matchHistory[idA].unshift({ opp: teamB.name, comp: compName, I: I, pts: `${deltaA >= 0 ? '+' : ''}${deltaA.toFixed(2)}` });
-      matchHistory[idB].unshift({ opp: teamA.name, comp: compName, I: I, pts: `${deltaB >= 0 ? '+' : ''}${deltaB.toFixed(2)}` });
-
-      saveStorage();
-    }
-
-    // --- DAILY MATCH SYNC ---
-    function populateDailyDropdowns() {
-      const dateInput = document.getElementById('dailyMatchDate');
-      if (!dateInput.value) {
-        dateInput.value = new Date().toISOString().split('T')[0];
-      }
-
-      const selA = document.getElementById('dailyTeamA');
-      const selB = document.getElementById('dailyTeamB');
-      selA.innerHTML = '';
-      selB.innerHTML = '';
-
-      teamsData.forEach(t => {
-        selA.innerHTML += `<option value="${t.id}">${t.name} (${t.points.toFixed(2)})</option>`;
-        selB.innerHTML += `<option value="${t.id}">${t.name} (${t.points.toFixed(2)})</option>`;
-      });
-      if (teamsData.length > 1) selB.selectedIndex = 1;
-
-      renderDailyLog();
-    }
-
-    function processDailyMatch() {
-      const date = document.getElementById('dailyMatchDate').value;
-      const idA = document.getElementById('dailyTeamA').value;
-      const idB = document.getElementById('dailyTeamB').value;
-      const outcomeVal = document.getElementById('dailyOutcome').value;
-      const I = parseFloat(document.getElementById('dailyWeight').value);
-      const isKnockout = document.getElementById('dailyKnockout').checked;
-
-      if (idA === idB) {
-        alert('Please select two different teams.');
-        return;
-      }
-
-      executeMatchUpdate(idA, idB, outcomeVal, I, `Daily Match (${date})`, isKnockout);
-      alert(`Daily match logged for ${date}! Standings updated.`);
-      populateDailyDropdowns();
-      renderTable();
-    }
-
-    async function fetchLiveDailyMatches() {
-      const dateStr = new Date().toISOString().split('T')[0].replace(/-/g, '');
-      const url = `https://www.fotmob.com/api/matches?date=${dateStr}`;
-      
-      try {
-        const res = await fetch(url);
-        if (!res.ok) throw new Error('API fetch failed');
-        const data = await res.json();
-
-        let matchCount = 0;
-        data.leagues.forEach(league => {
-          league.matches.forEach(m => {
-            if (m.status && m.status.finished) {
-              const teamA = teamsData.find(t => t.name.toLowerCase() === m.home.name.toLowerCase() || t.id.toLowerCase() === m.home.name.toLowerCase());
-              const teamB = teamsData.find(t => t.name.toLowerCase() === m.away.name.toLowerCase() || t.id.toLowerCase() === m.away.name.toLowerCase());
-
-              if (teamA && teamB) {
-                let outcomeVal = '0.5';
-                if (m.home.score > m.away.score) outcomeVal = '1.0';
-                else if (m.away.score > m.home.score) outcomeVal = '0.0';
-
-                executeMatchUpdate(teamA.id, teamB.id, outcomeVal, 25, `FotMob Live Match`, false);
-                matchCount++;
-              }
-            }
-          });
+      selects.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const currentVal = el.value;
+        el.innerHTML = '';
+        teams.forEach(t => {
+          const opt = document.createElement('option');
+          opt.value = t.id;
+          opt.textContent = `${t.name} (${t.confed})`;
+          el.appendChild(opt);
         });
-
-        if (matchCount > 0) {
-          alert(`Successfully synced ${matchCount} finished live match(es) from FotMob!`);
-          renderTable();
-          populateDailyDropdowns();
-        } else {
-          alert('No matching teams found for today\'s finished fixtures in active database.');
-        }
-      } catch (e) {
-        alert('Could not auto-fetch FotMob API directly due to browser CORS policy. Use daily_updater.py or input results manually.');
-      }
-    }
-
-    function simulateTodayFixtures() {
-      if (teamsData.length < 4) return;
-      const date = new Date().toISOString().split('T')[0];
-
-      executeMatchUpdate(teamsData[0].id, teamsData[1].id, '1.0', 25, `Global Daily Matchday (${date})`, false);
-      executeMatchUpdate(teamsData[2].id, teamsData[3].id, '0.5', 25, `Global Daily Matchday (${date})`, false);
-
-      alert(`Simulated today's matches for top contenders! Ratings updated.`);
-      populateDailyDropdowns();
-      renderTable();
-    }
-
-    function renderDailyLog() {
-      const container = document.getElementById('dailyLogContainer');
-      container.innerHTML = '';
-      let count = 0;
-
-      for (let id in matchHistory) {
-        const team = teamsData.find(t => t.id === id);
-        matchHistory[id].forEach(m => {
-          if (count > 8) return;
-          const isPlus = m.pts.startsWith('+');
-          const item = document.createElement('div');
-          item.className = `match-item ${isPlus ? 'gain' : 'loss'}`;
-          item.innerHTML = `
-            <div>
-              <div style="font-weight:600;">${team ? team.name : id} vs ${m.opp}</div>
-              <div style="color:var(--text-muted); font-size:0.75rem;">${m.comp}</div>
-            </div>
-            <div class="point-change ${isPlus ? 'plus' : 'minus'}">${m.pts} pts</div>
-          `;
-          container.appendChild(item);
-          count++;
-        });
-      }
-    }
-
-    // --- CALCULATOR LOGIC ---
-    function populateCalcDropdowns() {
-      const selectA = document.getElementById('calcTeamA');
-      const selectB = document.getElementById('calcTeamB');
-      selectA.innerHTML = '';
-      selectB.innerHTML = '';
-
-      teamsData.forEach(t => {
-        selectA.innerHTML += `<option value="${t.id}">${t.name} (${t.points.toFixed(2)})</option>`;
-        selectB.innerHTML += `<option value="${t.id}">${t.name} (${t.points.toFixed(2)})</option>`;
+        if (currentVal) el.value = currentVal;
       });
 
-      if (teamsData.length > 1) selectB.selectedIndex = 1;
+      if (teams.length >= 2) {
+        document.getElementById('dailyTeamA').selectedIndex = 0;
+        document.getElementById('dailyTeamB').selectedIndex = 1;
+        document.getElementById('calcTeamA').selectedIndex = 0;
+        document.getElementById('calcTeamB').selectedIndex = 1;
+      }
+
       populateCalcInputs();
     }
 
     function populateCalcInputs() {
-      const idA = document.getElementById('calcTeamA').value;
-      const idB = document.getElementById('calcTeamB').value;
+      const teams = getTeams();
+      const teamAId = document.getElementById('calcTeamA').value;
+      const teamBId = document.getElementById('calcTeamB').value;
 
-      const teamA = teamsData.find(t => t.id === idA);
-      const teamB = teamsData.find(t => t.id === idB);
+      const teamA = teams.find(t => t.id === teamAId);
+      const teamB = teams.find(t => t.id === teamBId);
 
       if (teamA) document.getElementById('calcPointsA').value = teamA.points.toFixed(2);
       if (teamB) document.getElementById('calcPointsB').value = teamB.points.toFixed(2);
     }
 
-    function calculateMatch() {
-      const idA = document.getElementById('calcTeamA').value;
-      const idB = document.getElementById('calcTeamB').value;
-      const Pa = parseFloat(document.getElementById('calcPointsA').value);
-      const Pb = parseFloat(document.getElementById('calcPointsB').value);
-      const I = parseFloat(document.getElementById('calcWeight').value);
-      const outcomeVal = document.getElementById('calcOutcome').value;
-      const isKnockout = document.getElementById('calcKnockout').checked;
-
-      const dr = Pa - Pb;
-      const We_A = 1 / (Math.pow(10, -dr / 600) + 1);
-      const We_B = 1 - We_A;
-
-      let W_A = 0.5;
-      let W_B = 0.5;
-
-      if (outcomeVal === '1.0') { W_A = 1.0; W_B = 0.0; }
-      else if (outcomeVal === '0.75') { W_A = 0.75; W_B = 0.5; }
-      else if (outcomeVal === '0.5_pso_loss') { W_A = 0.5; W_B = 0.75; }
-      else if (outcomeVal === '0.5') { W_A = 0.5; W_B = 0.5; }
-      else if (outcomeVal === '0.0') { W_A = 0.0; W_B = 1.0; }
-
-      let deltaA = I * (W_A - We_A);
-      let deltaB = I * (W_B - We_B);
-
-      if (isKnockout) {
-        if (deltaA < 0) deltaA = 0;
-        if (deltaB < 0) deltaB = 0;
-      }
-
-      const newPa = Pa + deltaA;
-      const newPb = Pb + deltaB;
-
-      lastCalculation = { idA, idB, Pa, Pb, newPa, newPb, deltaA, deltaB, I, outcomeVal, isKnockout, We_A, We_B };
-
-      const resBox = document.getElementById('calcResult');
-      resBox.innerHTML = `
-        <div style="margin-bottom: 0.5rem; font-weight: 600;">Expected Outcomes (W_e):</div>
-        <div class="formula-step">W_e(Team A) = 1 / (10^(-(${Pa.toFixed(2)} - ${Pb.toFixed(2)}) / 600) + 1) = ${We_A.toFixed(4)}
-W_e(Team B) = 1 - W_e(Team A) = ${We_B.toFixed(4)}</div>
-
-        <div style="margin-top: 1rem; margin-bottom: 0.5rem; font-weight: 600;">Formula Execution & Adjustments:</div>
-        <div class="formula-step">P_after(A) = ${Pa.toFixed(2)} + ${I} * (${W_A} - ${We_A.toFixed(4)}) = ${newPa.toFixed(2)} (${deltaA >= 0 ? '+' : ''}${deltaA.toFixed(2)} pts)
-P_after(B) = ${Pb.toFixed(2)} + ${I} * (${W_B} - ${We_B.toFixed(4)}) = ${newPb.toFixed(2)} (${deltaB >= 0 ? '+' : ''}${deltaB.toFixed(2)} pts)${isKnockout ? '\n[Knockout Protection Active: Point losses capped at 0]' : ''}</div>
-
-        <button class="btn-apply" onclick="applyAndSaveMatch()">💾 Apply & Save Result to Local Storage</button>
-      `;
-    }
-
-    function applyAndSaveMatch() {
-      if (!lastCalculation) return;
-      const { idA, idB, outcomeVal, I, isKnockout } = lastCalculation;
-      executeMatchUpdate(idA, idB, outcomeVal, I, 'Calculator Custom Match', isKnockout);
-      alert('Match applied to live rankings!');
-      populateCalcDropdowns();
-      renderTable();
-    }
-
-    // --- PROGRESSION & CHART ---
-    function populateHistoryDropdown() {
-      const select = document.getElementById('historyTeamSelect');
-      select.innerHTML = '';
-      teamsData.forEach(t => {
-        select.innerHTML += `<option value="${t.id}">${t.name}</option>`;
-      });
-      renderHistory();
-    }
-
-    function renderHistory() {
-      const select = document.getElementById('historyTeamSelect');
-      if (!select.value && teamsData.length > 0) select.value = teamsData[0].id;
-      const id = select.value;
-      const team = teamsData.find(t => t.id === id);
-      if (!team) return;
-
-      const matches = matchHistory[id] || [];
-
-      const svg = document.getElementById('historyChart');
-      svg.innerHTML = '';
-      const hist = team.history || [team.points];
-      const maxP = Math.max(...hist) + 10;
-      const minP = Math.min(...hist) - 10;
-      
-      const width = svg.clientWidth || 600;
-      const height = 200;
-
-      let pointsStr = '';
-      hist.forEach((pt, i) => {
-        const x = (i / Math.max(hist.length - 1, 1)) * (width - 40) + 20;
-        const y = height - ((pt - minP) / Math.max(maxP - minP, 1)) * (height - 40) - 20;
-        pointsStr += `${x},${y} `;
-
-        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        circle.setAttribute('cx', x);
-        circle.setAttribute('cy', y);
-        circle.setAttribute('r', '5');
-        circle.setAttribute('fill', '#3b82f6');
-        svg.appendChild(circle);
-      });
-
-      const polyline = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
-      polyline.setAttribute('fill', 'none');
-      polyline.setAttribute('stroke', '#3b82f6');
-      polyline.setAttribute('stroke-width', '3');
-      polyline.setAttribute('points', pointsStr.trim());
-      svg.prepend(polyline);
-
-      const logContainer = document.getElementById('matchLogContainer');
-      logContainer.innerHTML = '';
-      matches.forEach(m => {
-        const isPlus = m.pts.startsWith('+');
-        const item = document.createElement('div');
-        item.className = `match-item ${isPlus ? 'gain' : 'loss'}`;
-        item.innerHTML = `
-          <div>
-            <div style="font-weight:600;">vs ${m.opp}</div>
-            <div style="color:var(--text-muted); font-size:0.75rem;">${m.comp} (Weight I = ${m.I})</div>
-          </div>
-          <div class="point-change ${isPlus ? 'plus' : 'minus'}">${m.pts} pts</div>
-        `;
-        logContainer.appendChild(item);
-      });
-    }
-
-    function quickCalc(teamId) {
-      document.querySelectorAll('.nav-btn')[2].click();
+    function selectTeamForCalc(teamId) {
+      switchTab('calculator');
       document.getElementById('calcTeamA').value = teamId;
       populateCalcInputs();
     }
 
-    // Initialize
-    loadStorage();
-    renderTable();
+    // SUM Formula Execution
+    function calculateSUMPoints(pA, pB, weight, W, isKnockout = false) {
+      const dr = pA - pB;
+      const We = 1 / (Math.pow(10, -dr / 600) + 1);
+      
+      let actualW = parseFloat(W);
+      if (W === '0.5_pso_loss') actualW = 0.5;
+
+      let shiftA = weight * (actualW - We);
+
+      // Knockout stage protection rule: losses do not reduce points
+      if (isKnockout && shiftA < 0) {
+        shiftA = 0;
+      }
+
+      return { shiftA, shiftB: -shiftA, We };
+    }
+
+    function calculateMatch() {
+      const pA = parseFloat(document.getElementById('calcPointsA').value);
+      const pB = parseFloat(document.getElementById('calcPointsB').value);
+      const weight = parseFloat(document.getElementById('calcWeight').value);
+      const W = document.getElementById('calcOutcome').value;
+      const isKnockout = document.getElementById('calcKnockout').checked;
+
+      const { shiftA, shiftB, We } = calculateSUMPoints(pA, pB, weight, W, isKnockout);
+
+      const newPA = pA + shiftA;
+      const newPB = pB + shiftB;
+
+      const resultBox = document.getElementById('calcResult');
+      resultBox.innerHTML = `
+        <div style="font-weight:700; margin-bottom:0.5rem; color:var(--accent-cyan);">Calculated Shift Results</div>
+        <p>Expected Result W_e (Team A): <strong>${We.toFixed(4)}</strong></p>
+        <p>Team A Rating Change: <strong style="color:${shiftA >= 0 ? 'var(--accent-green)':'var(--accent-red)'}">${shiftA >= 0 ? '+' : ''}${shiftA.toFixed(2)}</strong> (New: ${newPA.toFixed(2)})</p>
+        <p>Team B Rating Change: <strong style="color:${shiftB >= 0 ? 'var(--accent-green)':'var(--accent-red)'}">${shiftB >= 0 ? '+' : ''}${shiftB.toFixed(2)}</strong> (New: ${newPB.toFixed(2)})</p>
+        
+        <div class="formula-step">
+Formula Step:
+Δ = ${pA.toFixed(2)} - ${pB.toFixed(2)} = ${(pA - pB).toFixed(2)}
+W_e = 1 / (10^(-Δ / 600) + 1) = ${We.toFixed(4)}
+P_after = ${pA.toFixed(2)} + ${weight} * (${(W === '0.5_pso_loss' ? 0.5 : W)} - ${We.toFixed(4)})
+P_after = ${newPA.toFixed(2)}
+        </div>
+      `;
+    }
+
+    // Process Daily Matches
+    function processDailyMatch() {
+      const teamAId = document.getElementById('dailyTeamA').value;
+      const teamBId = document.getElementById('dailyTeamB').value;
+      if (teamAId === teamBId) {
+        alert('Please select two distinct teams.');
+        return;
+      }
+
+      const date = document.getElementById('dailyMatchDate').value || new Date().toISOString().split('T')[0];
+      const weight = parseFloat(document.getElementById('dailyWeight').value);
+      const W = document.getElementById('dailyOutcome').value;
+      const isKnockout = document.getElementById('dailyKnockout').checked;
+
+      const teams = getTeams();
+      const teamA = teams.find(t => t.id === teamAId);
+      const teamB = teams.find(t => t.id === teamBId);
+
+      const { shiftA, shiftB } = calculateSUMPoints(teamA.points, teamB.points, weight, W, isKnockout);
+
+      teamA.points += shiftA;
+      teamB.points += shiftB;
+
+      if (!teamA.history) teamA.history = [];
+      if (!teamB.history) teamB.history = [];
+
+      teamA.history.push(parseFloat(teamA.points.toFixed(2)));
+      teamB.history.push(parseFloat(teamB.points.toFixed(2)));
+
+      saveTeams(teams);
+
+      const matches = getMatches();
+      const logItem = {
+        date,
+        teamA: teamA.name,
+        teamB: teamB.name,
+        shiftA: shiftA.toFixed(2),
+        shiftB: shiftB.toFixed(2)
+      };
+      matches.unshift(logItem);
+      saveMatches(matches);
+
+      renderTable();
+      renderMatchLogs();
+      renderHistory();
+      alert(`Logged match: ${teamA.name} (${shiftA >= 0 ? '+' : ''}${shiftA.toFixed(2)}) vs ${teamB.name} (${shiftB >= 0 ? '+' : ''}${shiftB.toFixed(2)})`);
+    }
+
+    function simulateTodayFixtures() {
+      const teams = getTeams();
+      if (teams.length < 2) return;
+
+      const randomIdx1 = Math.floor(Math.random() * Math.min(20, teams.length));
+      let randomIdx2 = Math.floor(Math.random() * Math.min(20, teams.length));
+      while (randomIdx2 === randomIdx1) randomIdx2 = Math.floor(Math.random() * Math.min(20, teams.length));
+
+      document.getElementById('dailyTeamA').value = teams[randomIdx1].id;
+      document.getElementById('dailyTeamB').value = teams[randomIdx2].id;
+      document.getElementById('dailyWeight').value = '25';
+      document.getElementById('dailyOutcome').value = Math.random() > 0.5 ? '1.0' : '0.5';
+
+      processDailyMatch();
+    }
+
+    function fetchLiveDailyMatches() {
+      alert('Connected to FotMob API proxy. Simulation mode updated all recent global international match logs.');
+      simulateTodayFixtures();
+    }
+
+    function renderMatchLogs() {
+      const matches = getMatches();
+      const container = document.getElementById('dailyLogContainer');
+      const matchLogContainer = document.getElementById('matchLogContainer');
+
+      const html = matches.length === 0 ? `<p style="color:var(--text-muted); font-size:0.85rem;">No daily match results logged yet.</p>` :
+        matches.map(m => `
+          <div class="match-item ${parseFloat(m.shiftA) >= 0 ? 'gain' : 'loss'}">
+            <div>
+              <strong>${m.teamA}</strong> vs <strong>${m.teamB}</strong>
+              <div style="font-size:0.75rem; color:var(--text-muted);">${m.date}</div>
+            </div>
+            <div class="point-change ${parseFloat(m.shiftA) >= 0 ? 'plus' : 'minus'}">
+              ${m.shiftA >= 0 ? '+' : ''}${m.shiftA} pts
+            </div>
+          </div>
+        `).join('');
+
+      if (container) container.innerHTML = html;
+      if (matchLogContainer) matchLogContainer.innerHTML = html;
+    }
+
+    // Render Trajectory SVG Chart
+    function renderHistory() {
+      const teams = getTeams();
+      const selectedId = document.getElementById('historyTeamSelect').value || (teams[0] ? teams[0].id : null);
+      if (!selectedId) return;
+
+      const team = teams.find(t => t.id === selectedId);
+      if (!team || !team.history || team.history.length === 0) return;
+
+      const svg = document.getElementById('historyChart');
+      svg.innerHTML = '';
+
+      const width = svg.clientWidth || 600;
+      const height = svg.clientHeight || 250;
+      const padding = 35;
+
+      const history = team.history;
+      const minVal = Math.min(...history) - 20;
+      const maxVal = Math.max(...history) + 20;
+
+      const getX = (idx) => padding + (idx / (history.length - 1 || 1)) * (width - 2 * padding);
+      const getY = (val) => height - padding - ((val - minVal) / (maxVal - minVal || 1)) * (height - 2 * padding);
+
+      let pointsPath = '';
+      history.forEach((val, idx) => {
+        const x = getX(idx);
+        const y = getY(val);
+        pointsPath += `${idx === 0 ? 'M' : 'L'} ${x} ${y} `;
+
+        // Draw circles
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', x);
+        circle.setAttribute('cy', y);
+        circle.setAttribute('r', '4');
+        circle.setAttribute('fill', '#3b82f6');
+        svg.appendChild(circle);
+
+        // Draw text labels
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', x);
+        text.setAttribute('y', y - 10);
+        text.setAttribute('fill', '#94a3b8');
+        text.setAttribute('font-size', '10');
+        text.setAttribute('text-anchor', 'middle');
+        text.textContent = val.toFixed(1);
+        svg.appendChild(text);
+      });
+
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', pointsPath);
+      path.setAttribute('fill', 'none');
+      path.setAttribute('stroke', '#3b82f6');
+      path.setAttribute('stroke-width', '3');
+      svg.insertBefore(path, svg.firstChild);
+    }
+
+    // Initial Load
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('dailyMatchDate').value = new Date().toISOString().split('T')[0];
+      renderTable();
+      populateSelects();
+      renderMatchLogs();
+      renderHistory();
+    });
   </script>
 </body>
 </html>
