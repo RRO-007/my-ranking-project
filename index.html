@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>World Football Ranking Engine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-main: #0b0f19;
+      --bg-card: #151c2c;
+      --bg-card-hover: #1e293b;
+      --bg-input: #0f172a;
+      --border-color: #334155;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent-blue: #3b82f6;
+      --accent-cyan: #06b6d4;
+      --accent-green: #10b981;
+      --accent-red: #ef4444;
+      --accent-gold: #f59e0b;
+      --accent-purple: #8b5cf6;
+      --font-sans: 'Inter', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      line-height: 1.5;
+      padding-bottom: 40px;
+    }
+
+    header {
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+      border-bottom: 1px solid var(--border-color);
+      padding: 2rem 1.5rem 1.5rem 1.5rem;
+      text-align: center;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+
+    .header-title {
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      background: linear-gradient(to right, #60a5fa, #a78bfa, #f472b6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+
+    .header-subtitle {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      max-width: 750px;
+      margin: 0 auto 1.5rem auto;
+    }
+
+    .mode-switch-container {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .mode-btn {
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 0.5rem 1.2rem;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .mode-btn.active {
+      background: rgba(139, 92, 246, 0.25);
+      border-color: var(--accent-purple);
+      color: #c084fc;
+      box-shadow: 0 0 12px rgba(139, 92, 246, 0.3);
+    }
+
+    .nav-tabs {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .nav-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 0.6rem 1.2rem;
+      border-radius: 9999px;
+      font-weight: 600;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .nav-btn:hover {
+      background: var(--bg-card-hover);
+      color: var(--text-main);
+    }
+
+    .nav-btn.active {
+      background: var(--accent-blue);
+      color: #fff;
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+    }
+
+    .container {
+      max-width: 1250px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    .card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
+    }
+
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-main);
+    }
+
+    .controls-bar {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .search-box { flex: 1; min-width: 200px; }
+
+    .search-input {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      color: var(--text-main);
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    .search-input:focus { border-color: var(--accent-blue); }
+
+    .confed-pills { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+
+    .confed-pill {
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .confed-pill.active {
+      background: rgba(59, 130, 246, 0.2);
+      color: var(--accent-blue);
+      border-color: var(--accent-blue);
+    }
+
+    .table-container {
+      overflow-x: auto;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+
+    th {
+      background-color: var(--bg-input);
+      color: var(--text-muted);
+      padding: 0.85rem 1rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    td {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--border-color);
+      background: var(--bg-card);
+    }
+
+    tr:hover td { background-color: var(--bg-card-hover); }
+
+    .rank-badge {
+      font-weight: 700;
+      width: 30px;
+      height: 30px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      font-size: 0.85rem;
+    }
+
+    .rank-badge.top3 {
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--accent-gold);
+      border-color: var(--accent-gold);
+    }
+
+    .diff-badge {
+      font-weight: 700;
+      font-size: 0.8rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .diff-up { background: rgba(16, 185, 129, 0.15); color: var(--accent-green); border: 1px solid var(--accent-green); }
+    .diff-down { background: rgba(239, 68, 68, 0.15); color: var(--accent-red); border: 1px solid var(--accent-red); }
+    .diff-neutral { background: var(--bg-input); color: var(--text-muted); border: 1px solid var(--border-color); }
+
+    .points-val {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--accent-cyan);
+    }
+
+    .confed-tag {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+
+    .confed-UEFA { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+    .confed-CONMEBOL { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+    .confed-CAF { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+    .confed-CONCACAF { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+    .confed-AFC { background: rgba(168, 85, 247, 0.2); color: #c084fc; }
+    .confed-OFC { background: rgba(236, 72, 153, 0.2); color: #f472b6; }
+
+    .calc-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 768px) { .calc-grid { grid-template-columns: 1fr; } }
+
+    .form-group { margin-bottom: 1rem; }
+
+    .form-label {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+      font-weight: 500;
+    }
+
+    .form-control {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 0.65rem;
+      color: var(--text-main);
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    .form-control:focus { border-color: var(--accent-blue); }
+
+    .result-box {
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-top: 1rem;
+    }
+
+    .formula-step {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      background: #090d16;
+      padding: 0.75rem;
+      border-radius: 6px;
+      border-left: 3px solid var(--accent-blue);
+      margin-top: 0.5rem;
+      white-space: pre-wrap;
+    }
+
+    .btn-action {
+      background: var(--accent-blue);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 1rem;
+      transition: background 0.2s;
+    }
+
+    .btn-action:hover { background: #2563eb; }
+
+    .btn-apply {
+      background: var(--accent-green);
+      color: white;
+      border: none;
+      padding: 0.65rem 1.2rem;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 1rem;
+      width: 100%;
+      transition: background 0.2s;
+    }
+
+    .btn-apply:hover { background: #059669; }
+
+    .btn-reset {
+      background: transparent;
+      border: 1px solid var(--accent-red);
+      color: var(--accent-red);
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-reset:hover { background: rgba(239, 68, 68, 0.15); }
+
+    .chart-container {
+      width: 100%;
+      height: 250px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      position: relative;
+      padding: 1rem;
+    }
+
+    svg.chart-svg { width: 100%; height: 100%; overflow: visible; }
+
+    .match-log { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 1rem; }
+
+    .match-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-input);
+      padding: 0.75rem 1rem;
+      border-radius: 6px;
+      border-left: 3px solid var(--border-color);
+      font-size: 0.85rem;
+    }
+
+    .match-item.gain { border-left-color: var(--accent-green); }
+    .match-item.loss { border-left-color: var(--accent-red); }
+
+    .point-change { font-family: var(--font-mono); font-weight: 700; }
+    .point-change.plus { color: var(--accent-green); }
+    .point-change.minus { color: var(--accent-red); }
+
+    .storage-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--accent-green);
+      font-size: 0.75rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 9999px;
+      border: 1px solid var(--accent-green);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-title">World Football Ranking Engine</div>
+    <div class="header-subtitle">
+      Compare calculated live daily rankings against official monthly rankings, track position movement (+/-), and simulate matches for both National Teams and Top Clubs.
+    </div>
+
+    <div class="mode-switch-container">
+      <button class="mode-btn active" id="modeNationalBtn" onclick="setRankingMode('national')">🌍 National Teams (FIFA)</button>
+      <button class="mode-btn" id="modeClubBtn" onclick="setRankingMode('club')">🛡️ Club World Rankings</button>
+    </div>
+
+    <div class="nav-tabs">
+      <button class="nav-btn active" onclick="switchTab('database')">📊 Dual Rankings Table</button>
+      <button class="nav-btn" onclick="switchTab('daily')">🗓️ Daily Match Sync</button>
+      <button class="nav-btn" onclick="switchTab('calculator')">🧮 Points Calculator</button>
+      <button class="nav-btn" onclick="switchTab('progression')">📈 Rating Trajectory</button>
+      <button class="nav-btn" onclick="switchTab('methodology')">📖 Specs & Rules</button>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <div id="tab-database" class="tab-content active">
+      <div class="card">
+        <div class="controls-bar">
+          <div class="search-box">
+            <input type="text" id="searchInput" class="search-input" placeholder="Search team or club by name..." oninput="renderTable()">
+          </div>
+          <div class="confed-pills" id="confedPillsContainer">
+            <button class="confed-pill active" onclick="filterConfed('ALL')">ALL</button>
+            <button class="confed-pill" onclick="filterConfed('UEFA')">UEFA</button>
+            <button class="confed-pill" onclick="filterConfed('CONMEBOL')">CONMEBOL</button>
+            <button class="confed-pill" onclick="filterConfed('CAF')">CAF</button>
+            <button class="confed-pill" onclick="filterConfed('CONCACAF')">CONCACAF</button>
+            <button class="confed-pill" onclick="filterConfed('AFC')">AFC</button>
+            <button class="confed-pill" onclick="filterConfed('OFC')">OFC</button>
+          </div>
+          <div class="storage-badge">💾 LocalStorage Synced</div>
+          <button class="btn-reset" onclick="resetDatabase()">Reset Mode Data</button>
+        </div>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Live Rank</th>
+                <th>Shift (+/-)</th>
+                <th>Monthly Rank</th>
+                <th>Team / Club</th>
+                <th>Confed / Region</th>
+                <th>Live Points (Calculated)</th>
+                <th>Official Points (Monthly)</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="rankingTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-daily" class="tab-content">
+      <div class="calc-grid">
+        <div class="card">
+          <div class="card-title">⚡ Process Daily Match Results</div>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+            Log today's matches to continuously update live rankings day-by-day. Points and rank movements reflect immediately in the Dual Ranking table.
+          </p>
+
+          <div class="form-group">
+            <label class="form-label">Match Date</label>
+            <input type="date" id="dailyMatchDate" class="form-control">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Team A</label>
+            <select id="dailyTeamA" class="form-control"></select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Team B</label>
+            <select id="dailyTeamB" class="form-control"></select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Match Outcome</label>
+            <select id="dailyOutcome" class="form-control">
+              <option value="1.0">1.0 – Team A Win (Regular/ET)</option>
+              <option value="0.75">0.75 – Team A Win (Penalty Shootout)</option>
+              <option value="0.5">0.5 – Draw</option>
+              <option value="0.5_pso_loss">0.5 – Team A Loss (Penalty Shootout)</option>
+              <option value="0.0">0.0 – Team B Win (Regular/ET)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Match Importance Weight (I)</label>
+            <select id="dailyWeight" class="form-control">
+              <option value="5">5 – Friendly outside International Calendar</option>
+              <option value="10">10 – Friendly / Regular League Match</option>
+              <option value="15">15 – Nations League Group Stage</option>
+              <option value="25" selected>25 – Qualifiers / League Match</option>
+              <option value="35">35 – Continental Final (Group Stage)</option>
+              <option value="40">40 – Continental Final (Knockout Stage)</option>
+              <option value="50">50 – World Cup / CWC (Group Stage)</option>
+              <option value="60">60 – World Cup / CWC (Knockout Stage)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label><input type="checkbox" id="dailyKnockout"> Knockout Stage Match (Protects rating from reduction on loss)</label>
+          </div>
+
+          <button class="btn-action" onclick="processDailyMatch()">Log Match & Update Live Rankings</button>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🤖 Automated Daily Fixtures & Web Sync</div>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+            Fetch completed matches directly from online football APIs (FotMob) or auto-simulate today's fixtures across top teams.
+          </p>
+          <button class="btn-action" style="background: var(--accent-purple);" onclick="fetchLiveDailyMatches()">🌐 Fetch Live Daily Results (FotMob API)</button>
+          <button class="btn-apply" onclick="simulateTodayFixtures()">⚽ Auto-Simulate Today's Global Fixtures</button>
+
+          <div class="card-title" style="margin-top: 1.5rem;">📅 Recent Daily Logs</div>
+          <div id="dailyLogContainer" class="match-log"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-calculator" class="tab-content">
+      <div class="calc-grid">
+        <div class="card">
+          <div class="card-title">⚔️ Custom Match Setup</div>
+          
+          <div class="form-group">
+            <label class="form-label">Team A</label>
+            <select id="calcTeamA" class="form-control" onchange="populateCalcInputs()"></select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Team A Points (P_before)</label>
+            <input type="number" step="0.01" id="calcPointsA" class="form-control" value="1995.98">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Team B (Opponent)</label>
+            <select id="calcTeamB" class="form-control" onchange="populateCalcInputs()"></select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Team B Points (P_before)</label>
+            <input type="number" step="0.01" id="calcPointsB" class="form-control" value="1970.37">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Match Importance Weight (I)</label>
+            <select id="calcWeight" class="form-control">
+              <option value="5">5 – Friendly outside International Calendar</option>
+              <option value="10" selected>10 – Friendly / Regular League Match</option>
+              <option value="15">15 – Nations League Group Stage</option>
+              <option value="25">25 – Qualifiers & Playoffs</option>
+              <option value="35">35 – Confederation Final (Group Stage)</option>
+              <option value="40">40 – Confederation Final (Knockout / Final)</option>
+              <option value="50">50 – World Cup / CWC (Group Stage)</option>
+              <option value="60">60 – World Cup / CWC (Knockout / Final)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Match Outcome (W for Team A)</label>
+            <select id="calcOutcome" class="form-control">
+              <option value="1.0">1.0 – Win in Regular/Extra Time</option>
+              <option value="0.75">0.75 – Win in Penalty Shootout (PSO)</option>
+              <option value="0.5">0.5 – Draw</option>
+              <option value="0.5_pso_loss">0.5 – Loss in Penalty Shootout (PSO)</option>
+              <option value="0.0">0.0 – Loss in Regular/Extra Time</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label><input type="checkbox" id="calcKnockout"> Knockout Stage Match (Protects rating from reduction on loss)</label>
+          </div>
+
+          <button class="btn-action" onclick="calculateMatch()">Calculate Rating Shift</button>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📊 Mathematical Breakdown & Save</div>
+          <div id="calcResult" class="result-box">
+            <p style="color: var(--text-muted);">Configure match parameters and click "Calculate Rating Shift" to view formula execution steps.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-progression" class="tab-content">
+      <div class="card">
+        <div class="card-title">📈 Rating Trajectory</div>
+        <div style="margin-bottom: 1rem; max-width: 300px;">
+          <label class="form-label">Select Entity to Inspect History</label>
+          <select id="historyTeamSelect" class="form-control" onchange="renderHistory()"></select>
+        </div>
+
+        <div class="chart-container">
+          <svg id="historyChart" class="chart-svg"></svg>
+        </div>
+
+        <div class="card-title" style="margin-top: 1.5rem;">📜 Match Log & Point Adjustments</div>
+        <div id="matchLogContainer" class="match-log"></div>
+      </div>
+    </div>
+
+    <div id="tab-methodology" class="tab-content">
+      <div class="card">
+        <div class="card-title">📖 FIFA & Club SUM Calculation Methodology</div>
+        <p style="margin-bottom: 1rem;">Both National Teams and Clubs utilize an adapted Elo algorithm known as the <strong>SUM formula</strong> to update ratings following every daily match.</p>
+
+        <div class="formula-step">
+Formula: P = P_before + I * (W - W_e)
+
+Where:
+• P_before : Points prior to the match
+• I        : Match importance weight (5 to 60)
+• W        : Result (1.0 = Win, 0.75 = PSO Win, 0.5 = Draw/PSO Loss, 0.0 = Loss)
+• W_e      : Expected outcome formula = 1 / (10^(-Δ / 600) + 1)
+  (Δ = P_before(Team A) - P_before(Team B))
+
+Dual Ranking Rules:
+• Live Rank     : Computed dynamically daily by sorting updated Live Points (P).
+• Monthly Rank  : Baseline official rank issued periodically by FIFA or governing body.
+• Position Shift: Diff = Monthly Rank - Live Rank (+2 means moved up 2 ranks).
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // Storage Keys
+    const KEY_NAT_TEAMS = 'fifa_dual_national_teams_v2';
+    const KEY_NAT_MATCHES = 'fifa_dual_national_matches_v2';
+    const KEY_CLUB_TEAMS = 'fifa_dual_club_teams_v2';
+    const KEY_CLUB_MATCHES = 'fifa_dual_club_matches_v2';
+
+    // Baseline Default Data: National Teams
+    const defaultNationalTeams = [
+      { id: 'ESP', name: 'Spain', confed: 'UEFA', points: 1995.98, officialPoints: 1889.02, officialRank: 1, history: [1980.12, 1988.50, 1992.10, 1995.98] },
+      { id: 'ARG', name: 'Argentina', confed: 'CONMEBOL', points: 1970.37, officialPoints: 1901.45, officialRank: 2, history: [1985.00, 1978.20, 1972.10, 1970.37] },
+      { id: 'FRA', name: 'France', confed: 'UEFA', points: 1948.97, officialPoints: 1872.10, officialRank: 3, history: [1940.00, 1942.50, 1945.00, 1948.97] },
+      { id: 'ENG', name: 'England', confed: 'UEFA', points: 1922.83, officialPoints: 1812.20, officialRank: 4, history: [1910.00, 1915.20, 1920.00, 1922.83] },
+      { id: 'BRA', name: 'Brazil', confed: 'CONMEBOL', points: 1804.92, officialPoints: 1775.85, officialRank: 5, history: [1820.00, 1812.50, 1808.00, 1804.92] },
+      { id: 'MAR', name: 'Morocco', confed: 'CAF', points: 1803.99, officialPoints: 1681.50, officialRank: 12, history: [1780.00, 1792.10, 1800.50, 1803.99] },
+      { id: 'POR', name: 'Portugal', confed: 'UEFA', points: 1787.85, officialPoints: 1756.12, officialRank: 6, history: [1775.00, 1780.00, 1785.10, 1787.85] },
+      { id: 'BEL', name: 'Belgium', confed: 'UEFA', points: 1778.36, officialPoints: 1761.24, officialRank: 7, history: [1790.00, 1785.00, 1780.00, 1778.36] },
+      { id: 'NED', name: 'Netherlands', confed: 'UEFA', points: 1775.54, officialPoints: 1750.00, officialRank: 8, history: [1765.00, 1770.20, 1772.00, 1775.54] },
+      { id: 'MEX', name: 'Mexico', confed: 'CONCACAF', points: 1754.30, officialPoints: 1658.82, officialRank: 15, history: [1730.00, 1740.00, 1748.50, 1754.30] },
+      { id: 'COL', name: 'Colombia', confed: 'CONMEBOL', points: 1739.89, officialPoints: 1738.00, officialRank: 9, history: [1720.00, 1728.00, 1735.00, 1739.89] },
+      { id: 'GER', name: 'Germany', confed: 'UEFA', points: 1726.22, officialPoints: 1700.10, officialRank: 10, history: [1710.00, 1718.00, 1722.00, 1726.22] },
+      { id: 'USA', name: 'United States', confed: 'CONCACAF', points: 1690.33, officialPoints: 1640.70, officialRank: 16, history: [1675.00, 1680.00, 1685.20, 1690.33] },
+      { id: 'JPN', name: 'Japan', confed: 'AFC', points: 1673.68, officialPoints: 1639.60, officialRank: 17, history: [1650.00, 1660.10, 1668.00, 1673.68] },
+      { id: 'SEN', name: 'Senegal', confed: 'CAF', points: 1653.43, officialPoints: 1620.00, officialRank: 19, history: [1640.00, 1645.00, 1650.00, 1653.43] },
+      { id: 'NZL', name: 'New Zealand', confed: 'OFC', points: 1228.10, officialPoints: 1200.00, officialRank: 90, history: [1210.00, 1215.00, 1220.00, 1228.10] }
+    ];
+
+    // Baseline Default Data: Club Rankings
+    const defaultClubTeams = [
+      { id: 'RMA', name: 'Real Madrid', confed: 'UEFA', points: 2045.50, officialPoints: 2020.00, officialRank: 1, history: [2010.00, 2025.00, 2038.20, 2045.50] },
+      { id: 'MCI', name: 'Manchester City', confed: 'UEFA', points: 2022.10, officialPoints: 2015.00, officialRank: 2, history: [2000.00, 2010.00, 2018.00, 2022.10] },
+      { id: 'BAY', name: 'Bayern Munich', confed: 'UEFA', points: 1950.40, officialPoints: 1940.00, officialRank: 3, history: [1930.00, 1935.00, 1942.00, 1950.40] },
+      { id: 'PSG', name: 'Paris Saint-Germain', confed: 'UEFA', points: 1910.25, officialPoints: 1900.00, officialRank: 4, history: [1890.00, 1895.00, 1902.00, 1910.25] },
+      { id: 'INT', name: 'Inter Milan', confed: 'UEFA', points: 1895.80, officialPoints: 1880.00, officialRank: 5, history: [1870.00, 1880.00, 1888.00, 1895.80] },
+      { id: 'FLA', name: 'Flamengo', confed: 'CONMEBOL', points: 1810.15, officialPoints: 1795.00, officialRank: 8, history: [1780.00, 1790.00, 1800.00, 1810.15] },
+      { id: 'PAL', name: 'Palmeiras', confed: 'CONMEBOL', points: 1795.30, officialPoints: 1790.00, officialRank: 9, history: [1775.00, 1782.00, 1788.00, 1795.30] },
+      { id: 'HIL', name: 'Al Hilal', confed: 'AFC', points: 1765.40, officialPoints: 1730.00, officialRank: 15, history: [1730.00, 1742.00, 1755.00, 1765.40] },
+      { id: 'MIA', name: 'Inter Miami', confed: 'CONCACAF', points: 1685.20, officialPoints: 1640.00, officialRank: 25, history: [1650.00, 1662.00, 1675.00, 1685.20] },
+      { id: 'AHY', name: 'Al Ahly', confed: 'CAF', points: 1670.10, officialPoints: 1650.00, officialRank: 24, history: [1640.00, 1650.00, 1660.00, 1670.10] }
+    ];
+
+    let currentMode = 'national';
+    let teamsData = [];
+    let matchHistory = {};
+    let selectedConfed = 'ALL';
+    let lastCalculation = null;
+
+    function loadStorage() {
+      const keyTeams = currentMode === 'national' ? KEY_NAT_TEAMS : KEY_CLUB_TEAMS;
+      const keyMatches = currentMode === 'national' ? KEY_NAT_MATCHES : KEY_CLUB_MATCHES;
+
+      const savedTeams = localStorage.getItem(keyTeams);
+      const savedMatches = localStorage.getItem(keyMatches);
+
+      const defaults = currentMode === 'national' ? defaultNationalTeams : defaultClubTeams;
+
+      teamsData = savedTeams ? JSON.parse(savedTeams) : [...defaults];
+      matchHistory = savedMatches ? JSON.parse(savedMatches) : {};
+    }
+
+    function saveStorage() {
+      const keyTeams = currentMode === 'national' ? KEY_NAT_TEAMS : KEY_CLUB_TEAMS;
+      const keyMatches = currentMode === 'national' ? KEY_NAT_MATCHES : KEY_CLUB_MATCHES;
+
+      localStorage.setItem(keyTeams, JSON.stringify(teamsData));
+      localStorage.setItem(keyMatches, JSON.stringify(matchHistory));
+    }
+
+    function setRankingMode(mode) {
+      currentMode = mode;
+      document.getElementById('modeNationalBtn').classList.toggle('active', mode === 'national');
+      document.getElementById('modeClubBtn').classList.toggle('active', mode === 'club');
+      
+      loadStorage();
+      renderTable();
+      populateCalcDropdowns();
+      populateDailyDropdowns();
+      populateHistoryDropdown();
+    }
+
+    function resetDatabase() {
+      if (confirm(`Reset all calculated live rankings and match histories for ${currentMode.toUpperCase()} mode to defaults?`)) {
+        const keyTeams = currentMode === 'national' ? KEY_NAT_TEAMS : KEY_CLUB_TEAMS;
+        const keyMatches = currentMode === 'national' ? KEY_NAT_MATCHES : KEY_CLUB_MATCHES;
+        localStorage.removeItem(keyTeams);
+        localStorage.removeItem(keyMatches);
+        loadStorage();
+        renderTable();
+        alert('Mode database reset!');
+      }
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+      
+      document.getElementById('tab-' + tabId).classList.add('active');
+      event.target.classList.add('active');
+
+      if (tabId === 'calculator') populateCalcDropdowns();
+      if (tabId === 'daily') populateDailyDropdowns();
+      if (tabId === 'progression') populateHistoryDropdown();
+    }
+
+    function filterConfed(confed) {
+      selectedConfed = confed;
+      document.querySelectorAll('.confed-pill').forEach(btn => {
+        btn.classList.toggle('active', btn.innerText === confed);
+      });
+      renderTable();
+    }
+
+    function renderTable() {
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      const tbody = document.getElementById('rankingTableBody');
+      tbody.innerHTML = '';
+
+      let filtered = teamsData.filter(t => {
+        const matchesConfed = selectedConfed === 'ALL' || t.confed === selectedConfed;
+        const matchesSearch = t.name.toLowerCase().includes(search) || t.id.toLowerCase().includes(search);
+        return matchesConfed && matchesSearch;
+      });
+
+      filtered.sort((a, b) => b.points - a.points);
+
+      filtered.forEach((team, idx) => {
+        const liveRank = idx + 1;
+        const officialRank = team.officialRank || liveRank;
+        
+        // Shift formula: Diff = Monthly Rank - Live Rank (+2 means moved up 2 ranks)
+        const diff = officialRank - liveRank;
+        
+        let diffBadge = '';
+        if (diff > 0) {
+          diffBadge = `<span class="diff-badge diff-up">▲ +${diff}</span>`;
+        } else if (diff < 0) {
+          diffBadge = `<span class="diff-badge diff-down">▼ ${diff}</span>`;
+        } else {
+          diffBadge = `<span class="diff-badge diff-neutral">= 0</span>`;
+        }
+
+        const tr = document.createElement('tr');
+        const rankClass = liveRank <= 3 ? 'rank-badge top3' : 'rank-badge';
+        
+        tr.innerHTML = `
+          <td><span class="${rankClass}">${liveRank}</span></td>
+          <td>${diffBadge}</td>
+          <td style="color: var(--text-muted); font-weight: 600;">#${officialRank}</td>
+          <td style="font-weight: 600;">${team.name} <span style="color: var(--text-muted); font-size:0.8rem;">(${team.id})</span></td>
+          <td><span class="confed-tag confed-${team.confed}">${team.confed}</span></td>
+          <td class="points-val">${team.points.toFixed(2)}</td>
+          <td style="color: var(--text-muted); font-family: var(--font-mono);">${team.officialPoints ? team.officialPoints.toFixed(2) : '-'}</td>
+          <td>
+            <button style="background:var(--bg-input); border:1px solid var(--border-color); color:var(--accent-blue); padding:0.3rem 0.6rem; border-radius:4px; font-size:0.75rem; cursor:pointer;" onclick="quickCalc('${team.id}')">Inspect</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // --- SUM MATCH EXECUTION LOGIC ---
+    function executeMatchUpdate(idA, idB, outcomeVal, I, compName, isKnockout = false) {
+      const teamA = teamsData.find(t => t.id === idA);
+      const teamB = teamsData.find(t => t.id === idB);
+      if (!teamA || !teamB) return;
+
+      const Pa = teamA.points;
+      const Pb = teamB.points;
+
+      // Delta calculation: Pa - Pb
+      const dr = Pa - Pb;
+      // Expected outcomes We
+      const We_A = 1 / (Math.pow(10, -dr / 600) + 1);
+      const We_B = 1 - We_A;
+
+      let W_A = 0.5;
+      let W_B = 0.5;
+
+      if (outcomeVal === '1.0' || outcomeVal === 1.0) { W_A = 1.0; W_B = 0.0; }
+      else if (outcomeVal === '0.75' || outcomeVal === 0.75) { W_A = 0.75; W_B = 0.5; }
+      else if (outcomeVal === '0.5_pso_loss') { W_A = 0.5; W_B = 0.75; }
+      else if (outcomeVal === '0.5' || outcomeVal === 0.5) { W_A = 0.5; W_B = 0.5; }
+      else if (outcomeVal === '0.0' || outcomeVal === 0.0) { W_A = 0.0; W_B = 1.0; }
+
+      let deltaA = I * (W_A - We_A);
+      let deltaB = I * (W_B - We_B);
+
+      // Knockout stage protection: losses capped at 0 reduction
+      if (isKnockout) {
+        if (deltaA < 0) deltaA = 0;
+        if (deltaB < 0) deltaB = 0;
+      }
+
+      teamA.points += deltaA;
+      teamB.points += deltaB;
+
+      teamA.history.push(parseFloat(teamA.points.toFixed(2)));
+      teamB.history.push(parseFloat(teamB.points.toFixed(2)));
+
+      if (!matchHistory[idA]) matchHistory[idA] = [];
+      if (!matchHistory[idB]) matchHistory[idB] = [];
+
+      matchHistory[idA].unshift({ opp: teamB.name, comp: compName, I: I, pts: `${deltaA >= 0 ? '+' : ''}${deltaA.toFixed(2)}` });
+      matchHistory[idB].unshift({ opp: teamA.name, comp: compName, I: I, pts: `${deltaB >= 0 ? '+' : ''}${deltaB.toFixed(2)}` });
+
+      saveStorage();
+    }
+
+    // --- DAILY MATCH SYNC ---
+    function populateDailyDropdowns() {
+      const dateInput = document.getElementById('dailyMatchDate');
+      if (!dateInput.value) {
+        dateInput.value = new Date().toISOString().split('T')[0];
+      }
+
+      const selA = document.getElementById('dailyTeamA');
+      const selB = document.getElementById('dailyTeamB');
+      selA.innerHTML = '';
+      selB.innerHTML = '';
+
+      teamsData.forEach(t => {
+        selA.innerHTML += `<option value="${t.id}">${t.name} (${t.points.toFixed(2)})</option>`;
+        selB.innerHTML += `<option value="${t.id}">${t.name} (${t.points.toFixed(2)})</option>`;
+      });
+      if (teamsData.length > 1) selB.selectedIndex = 1;
+
+      renderDailyLog();
+    }
+
+    function processDailyMatch() {
+      const date = document.getElementById('dailyMatchDate').value;
+      const idA = document.getElementById('dailyTeamA').value;
+      const idB = document.getElementById('dailyTeamB').value;
+      const outcomeVal = document.getElementById('dailyOutcome').value;
+      const I = parseFloat(document.getElementById('dailyWeight').value);
+      const isKnockout = document.getElementById('dailyKnockout').checked;
+
+      if (idA === idB) {
+        alert('Please select two different teams.');
+        return;
+      }
+
+      executeMatchUpdate(idA, idB, outcomeVal, I, `Daily Match (${date})`, isKnockout);
+      alert(`Daily match logged for ${date}! Standings updated.`);
+      populateDailyDropdowns();
+      renderTable();
+    }
+
+    async function fetchLiveDailyMatches() {
+      const dateStr = new Date().toISOString().split('T')[0].replace(/-/g, '');
+      const url = `https://www.fotmob.com/api/matches?date=${dateStr}`;
+      
+      try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('API fetch failed');
+        const data = await res.json();
+
+        let matchCount = 0;
+        data.leagues.forEach(league => {
+          league.matches.forEach(m => {
+            if (m.status && m.status.finished) {
+              const teamA = teamsData.find(t => t.name.toLowerCase() === m.home.name.toLowerCase() || t.id.toLowerCase() === m.home.name.toLowerCase());
+              const teamB = teamsData.find(t => t.name.toLowerCase() === m.away.name.toLowerCase() || t.id.toLowerCase() === m.away.name.toLowerCase());
+
+              if (teamA && teamB) {
+                let outcomeVal = '0.5';
+                if (m.home.score > m.away.score) outcomeVal = '1.0';
+                else if (m.away.score > m.home.score) outcomeVal = '0.0';
+
+                executeMatchUpdate(teamA.id, teamB.id, outcomeVal, 25, `FotMob Live Match`, false);
+                matchCount++;
+              }
+            }
+          });
+        });
+
+        if (matchCount > 0) {
+          alert(`Successfully synced ${matchCount} finished live match(es) from FotMob!`);
+          renderTable();
+          populateDailyDropdowns();
+        } else {
+          alert('No matching teams found for today\'s finished fixtures in active database.');
+        }
+      } catch (e) {
+        alert('Could not auto-fetch FotMob API directly due to browser CORS policy. Use daily_updater.py or input results manually.');
+      }
+    }
+
+    function simulateTodayFixtures() {
+      if (teamsData.length < 4) return;
+      const date = new Date().toISOString().split('T')[0];
+
+      executeMatchUpdate(teamsData[0].id, teamsData[1].id, '1.0', 25, `Global Daily Matchday (${date})`, false);
+      executeMatchUpdate(teamsData[2].id, teamsData[3].id, '0.5', 25, `Global Daily Matchday (${date})`, false);
+
+      alert(`Simulated today's matches for top contenders! Ratings updated.`);
+      populateDailyDropdowns();
+      renderTable();
+    }
+
+    function renderDailyLog() {
+      const container = document.getElementById('dailyLogContainer');
+      container.innerHTML = '';
+      let count = 0;
+
+      for (let id in matchHistory) {
+        const team = teamsData.find(t => t.id === id);
+        matchHistory[id].forEach(m => {
+          if (count > 8) return;
+          const isPlus = m.pts.startsWith('+');
+          const item = document.createElement('div');
+          item.className = `match-item ${isPlus ? 'gain' : 'loss'}`;
+          item.innerHTML = `
+            <div>
+              <div style="font-weight:600;">${team ? team.name : id} vs ${m.opp}</div>
+              <div style="color:var(--text-muted); font-size:0.75rem;">${m.comp}</div>
+            </div>
+            <div class="point-change ${isPlus ? 'plus' : 'minus'}">${m.pts} pts</div>
+          `;
+          container.appendChild(item);
+          count++;
+        });
+      }
+    }
+
+    // --- CALCULATOR LOGIC ---
+    function populateCalcDropdowns() {
+      const selectA = document.getElementById('calcTeamA');
+      const selectB = document.getElementById('calcTeamB');
+      selectA.innerHTML = '';
+      selectB.innerHTML = '';
+
+      teamsData.forEach(t => {
+        selectA.innerHTML += `<option value="${t.id}">${t.name} (${t.points.toFixed(2)})</option>`;
+        selectB.innerHTML += `<option value="${t.id}">${t.name} (${t.points.toFixed(2)})</option>`;
+      });
+
+      if (teamsData.length > 1) selectB.selectedIndex = 1;
+      populateCalcInputs();
+    }
+
+    function populateCalcInputs() {
+      const idA = document.getElementById('calcTeamA').value;
+      const idB = document.getElementById('calcTeamB').value;
+
+      const teamA = teamsData.find(t => t.id === idA);
+      const teamB = teamsData.find(t => t.id === idB);
+
+      if (teamA) document.getElementById('calcPointsA').value = teamA.points.toFixed(2);
+      if (teamB) document.getElementById('calcPointsB').value = teamB.points.toFixed(2);
+    }
+
+    function calculateMatch() {
+      const idA = document.getElementById('calcTeamA').value;
+      const idB = document.getElementById('calcTeamB').value;
+      const Pa = parseFloat(document.getElementById('calcPointsA').value);
+      const Pb = parseFloat(document.getElementById('calcPointsB').value);
+      const I = parseFloat(document.getElementById('calcWeight').value);
+      const outcomeVal = document.getElementById('calcOutcome').value;
+      const isKnockout = document.getElementById('calcKnockout').checked;
+
+      const dr = Pa - Pb;
+      const We_A = 1 / (Math.pow(10, -dr / 600) + 1);
+      const We_B = 1 - We_A;
+
+      let W_A = 0.5;
+      let W_B = 0.5;
+
+      if (outcomeVal === '1.0') { W_A = 1.0; W_B = 0.0; }
+      else if (outcomeVal === '0.75') { W_A = 0.75; W_B = 0.5; }
+      else if (outcomeVal === '0.5_pso_loss') { W_A = 0.5; W_B = 0.75; }
+      else if (outcomeVal === '0.5') { W_A = 0.5; W_B = 0.5; }
+      else if (outcomeVal === '0.0') { W_A = 0.0; W_B = 1.0; }
+
+      let deltaA = I * (W_A - We_A);
+      let deltaB = I * (W_B - We_B);
+
+      if (isKnockout) {
+        if (deltaA < 0) deltaA = 0;
+        if (deltaB < 0) deltaB = 0;
+      }
+
+      const newPa = Pa + deltaA;
+      const newPb = Pb + deltaB;
+
+      lastCalculation = { idA, idB, Pa, Pb, newPa, newPb, deltaA, deltaB, I, outcomeVal, isKnockout, We_A, We_B };
+
+      const resBox = document.getElementById('calcResult');
+      resBox.innerHTML = `
+        <div style="margin-bottom: 0.5rem; font-weight: 600;">Expected Outcomes (W_e):</div>
+        <div class="formula-step">W_e(Team A) = 1 / (10^(-(${Pa.toFixed(2)} - ${Pb.toFixed(2)}) / 600) + 1) = ${We_A.toFixed(4)}
+W_e(Team B) = 1 - W_e(Team A) = ${We_B.toFixed(4)}</div>
+
+        <div style="margin-top: 1rem; margin-bottom: 0.5rem; font-weight: 600;">Formula Execution & Adjustments:</div>
+        <div class="formula-step">P_after(A) = ${Pa.toFixed(2)} + ${I} * (${W_A} - ${We_A.toFixed(4)}) = ${newPa.toFixed(2)} (${deltaA >= 0 ? '+' : ''}${deltaA.toFixed(2)} pts)
+P_after(B) = ${Pb.toFixed(2)} + ${I} * (${W_B} - ${We_B.toFixed(4)}) = ${newPb.toFixed(2)} (${deltaB >= 0 ? '+' : ''}${deltaB.toFixed(2)} pts)${isKnockout ? '\n[Knockout Protection Active: Point losses capped at 0]' : ''}</div>
+
+        <button class="btn-apply" onclick="applyAndSaveMatch()">💾 Apply & Save Result to Local Storage</button>
+      `;
+    }
+
+    function applyAndSaveMatch() {
+      if (!lastCalculation) return;
+      const { idA, idB, outcomeVal, I, isKnockout } = lastCalculation;
+      executeMatchUpdate(idA, idB, outcomeVal, I, 'Calculator Custom Match', isKnockout);
+      alert('Match applied to live rankings!');
+      populateCalcDropdowns();
+      renderTable();
+    }
+
+    // --- PROGRESSION & CHART ---
+    function populateHistoryDropdown() {
+      const select = document.getElementById('historyTeamSelect');
+      select.innerHTML = '';
+      teamsData.forEach(t => {
+        select.innerHTML += `<option value="${t.id}">${t.name}</option>`;
+      });
+      renderHistory();
+    }
+
+    function renderHistory() {
+      const select = document.getElementById('historyTeamSelect');
+      if (!select.value && teamsData.length > 0) select.value = teamsData[0].id;
+      const id = select.value;
+      const team = teamsData.find(t => t.id === id);
+      if (!team) return;
+
+      const matches = matchHistory[id] || [];
+
+      const svg = document.getElementById('historyChart');
+      svg.innerHTML = '';
+      const hist = team.history || [team.points];
+      const maxP = Math.max(...hist) + 10;
+      const minP = Math.min(...hist) - 10;
+      
+      const width = svg.clientWidth || 600;
+      const height = 200;
+
+      let pointsStr = '';
+      hist.forEach((pt, i) => {
+        const x = (i / Math.max(hist.length - 1, 1)) * (width - 40) + 20;
+        const y = height - ((pt - minP) / Math.max(maxP - minP, 1)) * (height - 40) - 20;
+        pointsStr += `${x},${y} `;
+
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', x);
+        circle.setAttribute('cy', y);
+        circle.setAttribute('r', '5');
+        circle.setAttribute('fill', '#3b82f6');
+        svg.appendChild(circle);
+      });
+
+      const polyline = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+      polyline.setAttribute('fill', 'none');
+      polyline.setAttribute('stroke', '#3b82f6');
+      polyline.setAttribute('stroke-width', '3');
+      polyline.setAttribute('points', pointsStr.trim());
+      svg.prepend(polyline);
+
+      const logContainer = document.getElementById('matchLogContainer');
+      logContainer.innerHTML = '';
+      matches.forEach(m => {
+        const isPlus = m.pts.startsWith('+');
+        const item = document.createElement('div');
+        item.className = `match-item ${isPlus ? 'gain' : 'loss'}`;
+        item.innerHTML = `
+          <div>
+            <div style="font-weight:600;">vs ${m.opp}</div>
+            <div style="color:var(--text-muted); font-size:0.75rem;">${m.comp} (Weight I = ${m.I})</div>
+          </div>
+          <div class="point-change ${isPlus ? 'plus' : 'minus'}">${m.pts} pts</div>
+        `;
+        logContainer.appendChild(item);
+      });
+    }
+
+    function quickCalc(teamId) {
+      document.querySelectorAll('.nav-btn')[2].click();
+      document.getElementById('calcTeamA').value = teamId;
+      populateCalcInputs();
+    }
+
+    // Initialize
+    loadStorage();
+    renderTable();
+  </script>
+</body>
+</html>

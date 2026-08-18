@@ -1,0 +1,142 @@
+[
+  {
+    "id": "RMA",
+    "name": "Real Madrid",
+    "confed": "UEFA",
+    "points": 2045.5,
+    "officialPoints": 2020.0,
+    "officialRank": 1,
+    "history": [
+      2010.0,
+      2025.0,
+      2038.2,
+      2045.5
+    ]
+  },
+  {
+    "id": "MCI",
+    "name": "Manchester City",
+    "confed": "UEFA",
+    "points": 2022.1,
+    "officialPoints": 2015.0,
+    "officialRank": 2,
+    "history": [
+      2000.0,
+      2010.0,
+      2018.0,
+      2022.1
+    ]
+  },
+  {
+    "id": "BAY",
+    "name": "Bayern Munich",
+    "confed": "UEFA",
+    "points": 1950.4,
+    "officialPoints": 1940.0,
+    "officialRank": 3,
+    "history": [
+      1930.0,
+      1935.0,
+      1942.0,
+      1950.4
+    ]
+  },
+  {
+    "id": "PSG",
+    "name": "Paris Saint-Germain",
+    "confed": "UEFA",
+    "points": 1910.25,
+    "officialPoints": 1900.0,
+    "officialRank": 4,
+    "history": [
+      1890.0,
+      1895.0,
+      1902.0,
+      1910.25
+    ]
+  },
+  {
+    "id": "INT",
+    "name": "Inter Milan",
+    "confed": "UEFA",
+    "points": 1895.8,
+    "officialPoints": 1880.0,
+    "officialRank": 5,
+    "history": [
+      1860.0,
+      1872.0,
+      1885.0,
+      1895.8
+    ]
+  },
+  {
+    "id": "FLA",
+    "name": "Flamengo",
+    "confed": "CONMEBOL",
+    "points": 1810.15,
+    "officialPoints": 1795.0,
+    "officialRank": 8,
+    "history": [
+      1770.0,
+      1782.0,
+      1798.0,
+      1810.15
+    ]
+  },
+  {
+    "id": "PAL",
+    "name": "Palmeiras",
+    "confed": "CONMEBOL",
+    "points": 1795.3,
+    "officialPoints": 1790.0,
+    "officialRank": 9,
+    "history": [
+      1765.0,
+      1775.0,
+      1785.0,
+      1795.3
+    ]
+  },
+  {
+    "id": "HIL",
+    "name": "Al Hilal",
+    "confed": "AFC",
+    "points": 1765.4,
+    "officialPoints": 1730.0,
+    "officialRank": 15,
+    "history": [
+      1710.0,
+      1728.0,
+      1748.0,
+      1765.4
+    ]
+  },
+  {
+    "id": "MIA",
+    "name": "Inter Miami",
+    "confed": "CONCACAF",
+    "points": 1685.2,
+    "officialPoints": 1640.0,
+    "officialRank": 25,
+    "history": [
+      1610.0,
+      1632.0,
+      1660.0,
+      1685.2
+    ]
+  },
+  {
+    "id": "AHY",
+    "name": "Al Ahly",
+    "confed": "CAF",
+    "points": 1670.1,
+    "officialPoints": 1650.0,
+    "officialRank": 24,
+    "history": [
+      1625.0,
+      1640.0,
+      1658.0,
+      1670.1
+    ]
+  }
+]

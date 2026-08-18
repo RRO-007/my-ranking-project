@@ -1,0 +1,36 @@
+name: Daily Football Rankings Sync
+
+on:
+  schedule:
+    - cron: '0 1 * * *' # Runs daily at 01:00 UTC
+  workflow_dispatch:
+
+jobs:
+  build-and-sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+
+      - name: Execute Daily Match Fetch & SUM Calculations
+        run: python daily_updater.py
+
+      - name: Commit and Push Updated Data
+        run: |
+          git config --global user.name 'GitHub Actions Automation Bot'
+          git config --global user.email 'actions@github.com'
+          git add data/*.json
+          git commit -m "auto: daily match rankings sync [$(date -u +'%Y-%m-%d')]" || exit 0
+          git push

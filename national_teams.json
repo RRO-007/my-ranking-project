@@ -1,0 +1,226 @@
+[
+  {
+    "id": "ESP",
+    "name": "Spain",
+    "confed": "UEFA",
+    "points": 1995.98,
+    "officialPoints": 1889.02,
+    "officialRank": 1,
+    "history": [
+      1980.12,
+      1988.5,
+      1992.1,
+      1995.98
+    ]
+  },
+  {
+    "id": "ARG",
+    "name": "Argentina",
+    "confed": "CONMEBOL",
+    "points": 1970.37,
+    "officialPoints": 1901.45,
+    "officialRank": 2,
+    "history": [
+      1985.0,
+      1978.2,
+      1972.1,
+      1970.37
+    ]
+  },
+  {
+    "id": "FRA",
+    "name": "France",
+    "confed": "UEFA",
+    "points": 1948.97,
+    "officialPoints": 1872.1,
+    "officialRank": 3,
+    "history": [
+      1940.0,
+      1942.5,
+      1945.0,
+      1948.97
+    ]
+  },
+  {
+    "id": "ENG",
+    "name": "England",
+    "confed": "UEFA",
+    "points": 1922.83,
+    "officialPoints": 1812.2,
+    "officialRank": 4,
+    "history": [
+      1910.0,
+      1915.2,
+      1920.0,
+      1922.83
+    ]
+  },
+  {
+    "id": "BRA",
+    "name": "Brazil",
+    "confed": "CONMEBOL",
+    "points": 1804.92,
+    "officialPoints": 1775.85,
+    "officialRank": 5,
+    "history": [
+      1820.0,
+      1812.5,
+      1808.0,
+      1804.92
+    ]
+  },
+  {
+    "id": "MAR",
+    "name": "Morocco",
+    "confed": "CAF",
+    "points": 1803.99,
+    "officialPoints": 1681.5,
+    "officialRank": 12,
+    "history": [
+      1750.0,
+      1770.0,
+      1790.0,
+      1803.99
+    ]
+  },
+  {
+    "id": "POR",
+    "name": "Portugal",
+    "confed": "UEFA",
+    "points": 1787.85,
+    "officialPoints": 1756.12,
+    "officialRank": 6,
+    "history": [
+      1760.0,
+      1770.0,
+      1780.0,
+      1787.85
+    ]
+  },
+  {
+    "id": "BEL",
+    "name": "Belgium",
+    "confed": "UEFA",
+    "points": 1778.36,
+    "officialPoints": 1761.24,
+    "officialRank": 7,
+    "history": [
+      1785.0,
+      1780.0,
+      1779.0,
+      1778.36
+    ]
+  },
+  {
+    "id": "NED",
+    "name": "Netherlands",
+    "confed": "UEFA",
+    "points": 1775.54,
+    "officialPoints": 1750.8,
+    "officialRank": 8,
+    "history": [
+      1755.0,
+      1762.0,
+      1770.0,
+      1775.54
+    ]
+  },
+  {
+    "id": "MEX",
+    "name": "Mexico",
+    "confed": "CONCACAF",
+    "points": 1754.3,
+    "officialPoints": 1658.82,
+    "officialRank": 15,
+    "history": [
+      1710.0,
+      1725.0,
+      1740.0,
+      1754.3
+    ]
+  },
+  {
+    "id": "COL",
+    "name": "Colombia",
+    "confed": "CONMEBOL",
+    "points": 1739.89,
+    "officialPoints": 1738.0,
+    "officialRank": 9,
+    "history": [
+      1720.0,
+      1728.0,
+      1735.0,
+      1739.89
+    ]
+  },
+  {
+    "id": "GER",
+    "name": "Germany",
+    "confed": "UEFA",
+    "points": 1726.22,
+    "officialPoints": 1700.1,
+    "officialRank": 10,
+    "history": [
+      1690.0,
+      1705.0,
+      1715.0,
+      1726.22
+    ]
+  },
+  {
+    "id": "USA",
+    "name": "United States",
+    "confed": "CONCACAF",
+    "points": 1690.33,
+    "officialPoints": 1640.7,
+    "officialRank": 16,
+    "history": [
+      1650.0,
+      1665.0,
+      1680.0,
+      1690.33
+    ]
+  },
+  {
+    "id": "JPN",
+    "name": "Japan",
+    "confed": "AFC",
+    "points": 1673.68,
+    "officialPoints": 1639.6,
+    "officialRank": 17,
+    "history": [
+      1620.0,
+      1640.0,
+      1660.0,
+      1673.68
+    ]
+  },
+  {
+    "id": "SEN",
+    "name": "Senegal",
+    "confed": "CAF",
+    "points": 1653.43,
+    "officialPoints": 1620.0,
+    "officialRank": 19,
+    "history": [
+      1610.0,
+      1625.0,
+      1640.0,
+      1653.43
+    ]
+  },
+  {
+    "id": "NZL",
+    "name": "New Zealand",
+    "confed": "OFC",
+    "points": 1228.1,
+    "officialPoints": 1200.0,
+    "officialRank": 90,
+    "history": [
+      1180.0,
+      1195.0,
+      1210.0,
+      1228.1
+    ]
+  }
+]

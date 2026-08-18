@@ -1,0 +1,7 @@
+cd F:\OneDrive\vscode\vscode_py\fifa_rankings_py
+git init
+git config --global user.name "RRO-007"
+git config --global user.email "opurbobd2019@gmail.com"
+git remote add origin https://github.com/RRO-007/my-ranking-project.git
+git branch -M main
+
