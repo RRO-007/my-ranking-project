@@ -660,23 +660,38 @@ Dual Ranking Rules:
     const KEY_CLUB_TEAMS = 'fifa_dual_club_teams_v2';
     const KEY_CLUB_MATCHES = 'fifa_dual_club_matches_v2';
 
-    // Baseline Default Data: National Teams
+    // Baseline Default Data: National Teams (Top 30 + NZL)
     const defaultNationalTeams = [
       { id: 'ESP', name: 'Spain', confed: 'UEFA', points: 1995.98, officialPoints: 1889.02, officialRank: 1, history: [1980.12, 1988.50, 1992.10, 1995.98] },
       { id: 'ARG', name: 'Argentina', confed: 'CONMEBOL', points: 1970.37, officialPoints: 1901.45, officialRank: 2, history: [1985.00, 1978.20, 1972.10, 1970.37] },
       { id: 'FRA', name: 'France', confed: 'UEFA', points: 1948.97, officialPoints: 1872.10, officialRank: 3, history: [1940.00, 1942.50, 1945.00, 1948.97] },
       { id: 'ENG', name: 'England', confed: 'UEFA', points: 1922.83, officialPoints: 1812.20, officialRank: 4, history: [1910.00, 1915.20, 1920.00, 1922.83] },
       { id: 'BRA', name: 'Brazil', confed: 'CONMEBOL', points: 1804.92, officialPoints: 1775.85, officialRank: 5, history: [1820.00, 1812.50, 1808.00, 1804.92] },
-      { id: 'MAR', name: 'Morocco', confed: 'CAF', points: 1803.99, officialPoints: 1681.50, officialRank: 12, history: [1780.00, 1792.10, 1800.50, 1803.99] },
-      { id: 'POR', name: 'Portugal', confed: 'UEFA', points: 1787.85, officialPoints: 1756.12, officialRank: 6, history: [1775.00, 1780.00, 1785.10, 1787.85] },
-      { id: 'BEL', name: 'Belgium', confed: 'UEFA', points: 1778.36, officialPoints: 1761.24, officialRank: 7, history: [1790.00, 1785.00, 1780.00, 1778.36] },
-      { id: 'NED', name: 'Netherlands', confed: 'UEFA', points: 1775.54, officialPoints: 1750.00, officialRank: 8, history: [1765.00, 1770.20, 1772.00, 1775.54] },
-      { id: 'MEX', name: 'Mexico', confed: 'CONCACAF', points: 1754.30, officialPoints: 1658.82, officialRank: 15, history: [1730.00, 1740.00, 1748.50, 1754.30] },
-      { id: 'COL', name: 'Colombia', confed: 'CONMEBOL', points: 1739.89, officialPoints: 1738.00, officialRank: 9, history: [1720.00, 1728.00, 1735.00, 1739.89] },
-      { id: 'GER', name: 'Germany', confed: 'UEFA', points: 1726.22, officialPoints: 1700.10, officialRank: 10, history: [1710.00, 1718.00, 1722.00, 1726.22] },
-      { id: 'USA', name: 'United States', confed: 'CONCACAF', points: 1690.33, officialPoints: 1640.70, officialRank: 16, history: [1675.00, 1680.00, 1685.20, 1690.33] },
-      { id: 'JPN', name: 'Japan', confed: 'AFC', points: 1673.68, officialPoints: 1639.60, officialRank: 17, history: [1650.00, 1660.10, 1668.00, 1673.68] },
-      { id: 'SEN', name: 'Senegal', confed: 'CAF', points: 1653.43, officialPoints: 1620.00, officialRank: 19, history: [1640.00, 1645.00, 1650.00, 1653.43] },
+      { id: 'MAR', name: 'Morocco', confed: 'CAF', points: 1803.99, officialPoints: 1681.50, officialRank: 6, history: [1750.00, 1770.00, 1790.00, 1803.99] },
+      { id: 'POR', name: 'Portugal', confed: 'UEFA', points: 1787.85, officialPoints: 1756.12, officialRank: 7, history: [1760.00, 1770.00, 1780.00, 1787.85] },
+      { id: 'BEL', name: 'Belgium', confed: 'UEFA', points: 1778.36, officialPoints: 1761.24, officialRank: 8, history: [1785.00, 1780.00, 1779.00, 1778.36] },
+      { id: 'NED', name: 'Netherlands', confed: 'UEFA', points: 1775.54, officialPoints: 1750.80, officialRank: 9, history: [1755.00, 1762.00, 1770.00, 1775.54] },
+      { id: 'MEX', name: 'Mexico', confed: 'CONCACAF', points: 1754.30, officialPoints: 1658.82, officialRank: 10, history: [1710.00, 1725.00, 1740.00, 1754.30] },
+      { id: 'COL', name: 'Colombia', confed: 'CONMEBOL', points: 1739.89, officialPoints: 1738.00, officialRank: 11, history: [1720.00, 1728.00, 1735.00, 1739.89] },
+      { id: 'GER', name: 'Germany', confed: 'UEFA', points: 1726.22, officialPoints: 1700.10, officialRank: 12, history: [1690.00, 1705.00, 1715.00, 1726.22] },
+      { id: 'CRO', name: 'Croatia', confed: 'UEFA', points: 1723.05, officialPoints: 1714.87, officialRank: 13, history: [1700.00, 1708.00, 1715.00, 1723.05] },
+      { id: 'SUI', name: 'Switzerland', confed: 'UEFA', points: 1710.88, officialPoints: 1650.06, officialRank: 14, history: [1660.00, 1680.00, 1695.00, 1710.88] },
+      { id: 'ITA', name: 'Italy', confed: 'UEFA', points: 1704.73, officialPoints: 1704.73, officialRank: 15, history: [1690.00, 1695.00, 1700.00, 1704.73] },
+      { id: 'USA', name: 'United States', confed: 'CONCACAF', points: 1690.33, officialPoints: 1640.70, officialRank: 16, history: [1650.00, 1665.00, 1680.00, 1690.33] },
+      { id: 'JPN', name: 'Japan', confed: 'AFC', points: 1673.68, officialPoints: 1639.60, officialRank: 17, history: [1620.00, 1640.00, 1660.00, 1673.68] },
+      { id: 'SEN', name: 'Senegal', confed: 'CAF', points: 1653.43, officialPoints: 1620.00, officialRank: 18, history: [1610.00, 1625.00, 1640.00, 1653.43] },
+      { id: 'NOR', name: 'Norway', confed: 'UEFA', points: 1651.29, officialPoints: 1557.44, officialRank: 19, history: [1560.00, 1590.00, 1620.00, 1651.29] },
+      { id: 'URU', name: 'Uruguay', confed: 'CONMEBOL', points: 1634.70, officialPoints: 1673.07, officialRank: 20, history: [1660.00, 1655.00, 1645.00, 1634.70] },
+      { id: 'DEN', name: 'Denmark', confed: 'UEFA', points: 1619.47, officialPoints: 1619.47, officialRank: 21, history: [1610.00, 1612.00, 1615.00, 1619.47] },
+      { id: 'IRN', name: 'Iran', confed: 'AFC', points: 1609.85, officialPoints: 1619.58, officialRank: 22, history: [1620.00, 1618.00, 1612.00, 1609.85] },
+      { id: 'AUT', name: 'Austria', confed: 'UEFA', points: 1598.82, officialPoints: 1597.40, officialRank: 23, history: [1580.00, 1588.00, 1592.00, 1598.82] },
+      { id: 'EGY', name: 'Egypt', confed: 'CAF', points: 1597.04, officialPoints: 1562.37, officialRank: 24, history: [1550.00, 1568.00, 1580.00, 1597.04] },
+      { id: 'ECU', name: 'Ecuador', confed: 'CONMEBOL', points: 1592.59, officialPoints: 1598.52, officialRank: 25, history: [1600.00, 1598.00, 1595.00, 1592.59] },
+      { id: 'NGA', name: 'Nigeria', confed: 'CAF', points: 1585.02, officialPoints: 1585.02, officialRank: 26, history: [1575.00, 1580.00, 1582.00, 1585.02] },
+      { id: 'TUR', name: 'Turkiye', confed: 'UEFA', points: 1582.54, officialPoints: 1605.73, officialRank: 27, history: [1610.00, 1600.00, 1590.00, 1582.54] },
+      { id: 'AUS', name: 'Australia', confed: 'AFC', points: 1581.51, officialPoints: 1579.34, officialRank: 28, history: [1570.00, 1575.00, 1578.00, 1581.51] },
+      { id: 'ALG', name: 'Algeria', confed: 'CAF', points: 1576.80, officialPoints: 1571.03, officialRank: 29, history: [1560.00, 1565.00, 1570.00, 1576.80] },
+      { id: 'CAN', name: 'Canada', confed: 'CONCACAF', points: 1571.34, officialPoints: 1559.48, officialRank: 30, history: [1540.00, 1550.00, 1560.00, 1571.34] },
       { id: 'NZL', name: 'New Zealand', confed: 'OFC', points: 1228.10, officialPoints: 1200.00, officialRank: 90, history: [1210.00, 1215.00, 1220.00, 1228.10] }
     ];
 
@@ -782,7 +797,6 @@ Dual Ranking Rules:
         const liveRank = idx + 1;
         const officialRank = team.officialRank || liveRank;
         
-        // Shift formula: Diff = Monthly Rank - Live Rank (+2 means moved up 2 ranks)
         const diff = officialRank - liveRank;
         
         let diffBadge = '';
@@ -822,9 +836,7 @@ Dual Ranking Rules:
       const Pa = teamA.points;
       const Pb = teamB.points;
 
-      // Delta calculation: Pa - Pb
       const dr = Pa - Pb;
-      // Expected outcomes We
       const We_A = 1 / (Math.pow(10, -dr / 600) + 1);
       const We_B = 1 - We_A;
 
@@ -840,7 +852,6 @@ Dual Ranking Rules:
       let deltaA = I * (W_A - We_A);
       let deltaB = I * (W_B - We_B);
 
-      // Knockout stage protection: losses capped at 0 reduction
       if (isKnockout) {
         if (deltaA < 0) deltaA = 0;
         if (deltaB < 0) deltaB = 0;
